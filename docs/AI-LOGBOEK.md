@@ -106,3 +106,31 @@ De repository wordt gecontroleerd met Git-status en de eerste commit wordt nagek
 ### Eigen beslissing
 
 De repository blijft voorlopig lokaal. Publicatie naar GitHub gebeurt pas na een bewuste keuze voor een publieke of privérepository.
+
+---
+
+## Interactie 4 - Openbare GitHub-repository
+
+**Datum:** 24 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Zichtbaarheid van de GitHub-repository
+
+### Volledige prompt van de student
+
+> hij mag openbaar
+
+### Antwoord en advies van AI
+
+Codex heeft uitgelegd dat de openbare GitHub-repository de naam `slimme-voorraadweergave` krijgt, omdat GitHub-repositorynamen geen spaties gebruiken. De lokale repository wordt aan GitHub gekoppeld en de bestaande `main`-branch wordt gepubliceerd.
+
+### Wat heb ik ermee gedaan?
+
+De projectrepository wordt openbaar gemaakt, zodat het project via GitHub bekeken kan worden.
+
+### Controle
+
+Vooraf is gecontroleerd dat GitHub CLI is ingelogd op het juiste account en dat er nog geen repository met dezelfde naam bestaat. Na publicatie worden de zichtbaarheid, gekoppelde remote en gepushte commit gecontroleerd.
+
+### Eigen beslissing
+
+Ik heb zelf gekozen dat de GitHub-repository openbaar mag zijn.
