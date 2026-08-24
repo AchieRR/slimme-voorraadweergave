@@ -162,3 +162,31 @@ In GitHub Desktop is gecontroleerd dat de huidige repository `slimme-voorraadwee
 ### Eigen beslissing
 
 Ik wil GitHub Desktop gebruiken om de Git-geschiedenis en wijzigingen van het schoolproject zichtbaar te beheren.
+
+---
+
+## Interactie 6 - Eerste ontwikkelsprint kiezen
+
+**Datum:** 24 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Een haalbare eerste taak van ongeveer dertig minuten
+
+### Volledige prompt van de student
+
+> oke hoe gaan we beginnen geef me iets wat ik in een half uurtje zou kunnen doen
+
+### Antwoord en advies van AI
+
+Codex adviseerde om te beginnen met een statische publieke voorraadpagina in gewone HTML en CSS. De eerste sprint bevat bewust nog geen JavaScript, backend, database of authenticatie. De pagina toont drie voorbeeldproducten en gebruikt een rustig zwart-witontwerp met grote tekst, zodat meteen rekening wordt gehouden met de leesbaarheid van een e-inkscherm.
+
+### Wat heb ik ermee gedaan?
+
+Ik maak zelf de map `public` en de bestanden `index.html` en `style.css`. Daarna typ ik de kleine codeblokken uit de chat over en open ik de pagina in een browser.
+
+### Controle
+
+Ik controleer of de titel, drie producten, voorraadaantallen en de status uitverkocht zichtbaar zijn. Daarna stuur ik mijn resultaat of code naar Codex voor controle.
+
+### Eigen beslissing
+
+Ik begin met een eenvoudige zichtbare versie en voeg ingewikkeldere onderdelen pas toe wanneer ik deze basis begrijp.
