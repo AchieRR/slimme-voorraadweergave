@@ -190,3 +190,31 @@ Ik controleer of de titel, drie producten, voorraadaantallen en de status uitver
 ### Eigen beslissing
 
 Ik begin met een eenvoudige zichtbare versie en voeg ingewikkeldere onderdelen pas toe wanneer ik deze basis begrijp.
+
+---
+
+## Interactie 7 - Stap 2: producten met JavaScript tonen
+
+**Datum:** 24 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Vervolgstap na de statische voorraadpagina
+
+### Volledige prompt van de student
+
+> oke wat is stap 2
+
+### Antwoord en advies van AI
+
+Codex heeft eerst gecontroleerd dat `public/index.html` en `public/style.css` aanwezig zijn. De HTML-structuur en de koppeling met het stylesheet waren correct aanwezig. Als tweede sprint is geadviseerd om de drie hardgecodeerde productblokken te vervangen door één JavaScript-gegevenslijst en een functie die de HTML opbouwt.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg zelf `public/app.js` toe, koppel het bestand aan `index.html` en laat JavaScript de producten op de pagina plaatsen.
+
+### Controle
+
+Na de wijziging controleer ik of dezelfde drie producten zichtbaar blijven, of voorraad nul automatisch de status `Uitverkocht` krijgt en of er fouten in de browserconsole staan.
+
+### Eigen beslissing
+
+Ik leer eerst hoe productgegevens los van de HTML worden beheerd. Later vervangen we deze tijdelijke JavaScriptlijst door gegevens uit de backend en database.
