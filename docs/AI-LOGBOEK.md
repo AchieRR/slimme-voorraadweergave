@@ -134,3 +134,31 @@ Vooraf is gecontroleerd dat GitHub CLI is ingelogd op het juiste account en dat 
 ### Eigen beslissing
 
 Ik heb zelf gekozen dat de GitHub-repository openbaar mag zijn.
+
+---
+
+## Interactie 5 - Repository toevoegen aan GitHub Desktop
+
+**Datum:** 24 augustus 2026  
+**AI-tool:** Codex met Windows Computer Use  
+**Onderwerp:** Lokale repository openen in GitHub Desktop
+
+### Volledige prompt van de student
+
+> voeg toe aan git desktop
+
+### Antwoord en advies van AI
+
+Codex heeft GitHub Desktop geopend en via **Add existing repository** de lokale map `C:\Users\ahmad\Documents\ChatGPT\voorraad` toegevoegd. GitHub Desktop herkende de repository als `slimme-voorraadweergave`, op branch `main`, gekoppeld aan de bestaande GitHub-remote.
+
+### Wat heb ik ermee gedaan?
+
+De repository kan nu vanuit GitHub Desktop worden bekeken en later worden gebruikt om wijzigingen te controleren, committen, pushen en ophalen.
+
+### Controle
+
+In GitHub Desktop is gecontroleerd dat de huidige repository `slimme-voorraadweergave` is, de huidige branch `main` is en er geen lokale wijzigingen aanwezig waren voordat deze logboeknotitie werd toegevoegd.
+
+### Eigen beslissing
+
+Ik wil GitHub Desktop gebruiken om de Git-geschiedenis en wijzigingen van het schoolproject zichtbaar te beheren.
