@@ -218,3 +218,31 @@ Na de wijziging controleer ik of dezelfde drie producten zichtbaar blijven, of v
 ### Eigen beslissing
 
 Ik leer eerst hoe productgegevens los van de HTML worden beheerd. Later vervangen we deze tijdelijke JavaScriptlijst door gegevens uit de backend en database.
+
+---
+
+## Interactie 8 - Controle van stap 2 en start backend
+
+**Datum:** 24 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** JavaScript controleren en de derde ontwikkelsprint bepalen
+
+### Volledige prompt van de student
+
+> oke t werkt wat is stap 3
+
+### Antwoord en advies van AI
+
+Codex controleerde `public/index.html` en `public/app.js`. De JavaScriptlijst, lus, automatische uitverkochtstatus en veilige plaatsing met `textContent` waren aanwezig. In `index.html` werd wel een dubbele geneste productensectie gevonden. De browser kon dit tonen, maar de HTML-structuur was onnodig en moest eerst worden gecorrigeerd. Daarna is als derde sprint geadviseerd om een eenvoudige Node.js/Express-backend en een eerste alleen-lezen API-endpoint te maken.
+
+### Wat heb ik ermee gedaan?
+
+Ik verwijder zelf de buitenste dubbele productensectie. Daarna initialiseer ik Node.js, installeer ik Express en typ ik zelf een `server.js` die de publieke bestanden aanbiedt en voorbeeldproducten als JSON teruggeeft.
+
+### Controle
+
+Ik controleer eerst of er nog precies één productensectie bestaat. Voor de backend controleer ik vervolgens `http://localhost:3000` en `http://localhost:3000/api/producten`.
+
+### Eigen beslissing
+
+De eerste API is bewust alleen-lezen en gebruikt nog tijdelijke gegevens. De koppeling van de frontend met de API volgt in een aparte stap, zodat ik ieder onderdeel afzonderlijk kan begrijpen en testen.
