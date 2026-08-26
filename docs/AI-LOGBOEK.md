@@ -302,3 +302,31 @@ Ik controleer of `data/voorraad.db` wordt aangemaakt, of de API de producten uit
 ### Eigen beslissing
 
 Ik gebruik de ingebouwde SQLite-module van Node.js 24. Dit houdt het project klein en begrijpelijk. Ik accepteer daarbij dat het project minimaal een recente Node.js 24-versie nodig heeft.
+
+---
+
+## Interactie 11 - Omvang en resterende stappen plannen
+
+**Datum:** 26 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Inschatten hoeveel ontwikkelstappen het project nodig heeft
+
+### Volledige prompt van de student
+
+> als we zo door gaan met de stappen hoeveel stappen ong zijnn er
+
+### Antwoord en advies van AI
+
+Codex schatte dat de verplichte basis ongeveer achttien overzichtelijke stappen nodig heeft. De student werkt momenteel aan stap 5, waardoor er ongeveer dertien stappen overblijven. Moeilijke onderwerpen zoals authenticatie en testen kunnen tijdens het uitvoeren in kleinere deelstappen worden verdeeld. Bonusopdrachten vallen buiten deze schatting.
+
+### Wat heb ik ermee gedaan?
+
+Ik gebruik de routekaart om mijn voortgang te volgen en blijf per keer aan één klein en controleerbaar onderdeel werken.
+
+### Controle
+
+De geplande stappen zijn vergeleken met de verplichte software, security, test-, documentatie- en presentatieonderdelen uit de projectopdracht.
+
+### Eigen beslissing
+
+Ik bouw eerst alle verplichte onderdelen. Bonusfuncties worden alleen toegevoegd wanneer de basis volledig werkt en getest is.
