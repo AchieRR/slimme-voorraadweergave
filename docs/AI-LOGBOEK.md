@@ -246,3 +246,31 @@ Ik controleer eerst of er nog precies één productensectie bestaat. Voor de bac
 ### Eigen beslissing
 
 De eerste API is bewust alleen-lezen en gebruikt nog tijdelijke gegevens. De koppeling van de frontend met de API volgt in een aparte stap, zodat ik ieder onderdeel afzonderlijk kan begrijpen en testen.
+
+---
+
+## Interactie 9 - Stap 4: frontend koppelen aan de API
+
+**Datum:** 26 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Producten met `fetch` ophalen uit de backend
+
+### Volledige prompt van de student
+
+> stap 4
+
+### Antwoord en advies van AI
+
+Codex controleerde eerst de bestanden uit stap 3. `server.js`, Express, `package.json`, `package-lock.json` en het publieke API-endpoint waren aanwezig. De server is lokaal gestart en `GET /api/producten` gaf de drie verwachte producten als JSON terug. De bestanden van stap 3 waren op dat moment nog niet gecommit. Voor stap 4 is geadviseerd om de tijdelijke productlijst uit `public/app.js` te verwijderen en de gegevens met de JavaScriptfunctie `fetch` uit `/api/producten` op te halen.
+
+### Wat heb ik ermee gedaan?
+
+Ik commit eerst mijn eigen werk uit stap 3. Daarna pas ik zelf `public/app.js` aan zodat de publieke pagina de backend als gegevensbron gebruikt.
+
+### Controle
+
+Ik controleer of de pagina via `http://localhost:3000` dezelfde drie producten toont, of de browserconsole geen fouten bevat en of een gewijzigde voorraad in `server.js` na een serverherstart zichtbaar wordt.
+
+### Eigen beslissing
+
+De frontend bevat vanaf deze stap geen eigen voorraadlijst meer. De backend wordt de enige gegevensbron, zodat verschillende schermen later dezelfde voorraad kunnen gebruiken.
