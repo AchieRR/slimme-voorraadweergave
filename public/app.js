@@ -1,21 +1,6 @@
-const producten = [
-    {
-        naam: "Verse melk",
-        voorraad: 6
-    },
-    {
-        naam: "Verse yoghurt",
-        voorraad: 3
-    },
-    {
-        naam: "IJsjes",
-        voorraad: 0
-    }
-];
-
 const productenContainer = document.querySelector("#producten");
 
-for (const product of producten) {
+function maakProductElement(product) {
     const isUitverkocht = product.voorraad === 0;
 
     const productElement = document.createElement("article");
@@ -49,14 +34,34 @@ for (const product of producten) {
 
     aantalElement.append(nummerElement, omschrijvingElement);
     productElement.append(informatieElement, aantalElement);
-    productenContainer.append(productElement);
+
+    return productElement;
 }
 
+async function laadProducten() {
+    try {
+        const response = await fetch("/api/producten");
 
+        if (!response.ok) {
+            throw new Error(`API-fout: ${response.status}`);
+        }
 
+        const producten = await response.json();
 
+        productenContainer.replaceChildren();
 
+        for (const product of producten) {
+            const productElement = maakProductElement(product);
+            productenContainer.append(productElement);
+        }
+    } catch (error) {
+        console.error("Producten ophalen mislukt:", error);
 
+        productenContainer.textContent =
+            "De voorraad is tijdelijk niet beschikbaar.";
+    }
+}
 
+laadProducten();
 
-
+setInterval(laadProducten, 60_000);

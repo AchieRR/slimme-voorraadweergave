@@ -22,3 +22,8 @@ Thumbs.db
 
 # Temporary files created while inspecting the assignment
 tmp/
+
+# Lokale SQLite-database
+data/*.db
+data/*.db-shm
+data/*.db-wal
