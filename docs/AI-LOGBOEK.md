@@ -274,3 +274,31 @@ Ik controleer of de pagina via `http://localhost:3000` dezelfde drie producten t
 ### Eigen beslissing
 
 De frontend bevat vanaf deze stap geen eigen voorraadlijst meer. De backend wordt de enige gegevensbron, zodat verschillende schermen later dezelfde voorraad kunnen gebruiken.
+
+---
+
+## Interactie 10 - Stap 5: blijvende opslag met SQLite
+
+**Datum:** 26 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Tijdelijke servergegevens vervangen door een database
+
+### Volledige prompt van de student
+
+> stap 5 aub
+
+### Antwoord en advies van AI
+
+Codex controleerde dat stap 4 in `public/app.js` aanwezig was. De pagina haalt producten met `fetch` op, verwerkt API-fouten en vernieuwt zichzelf iedere zestig seconden. De wijziging was nog niet gecommit. Voor stap 5 adviseerde Codex SQLite als lokale database. Omdat het project Node.js 24.16.0 gebruikt en `node:sqlite` lokaal beschikbaar is, is geen extern SQLite-pakket nodig. De officiële Node.js-documentatie is gebruikt om deze keuze te controleren.
+
+### Wat heb ik ermee gedaan?
+
+Ik commit eerst stap 4. Daarna maak ik zelf `database.js`, laat ik daarin de tabel `producten` aanmaken en vervang ik de tijdelijke array in `server.js` door een SQL-query.
+
+### Controle
+
+Ik controleer of `data/voorraad.db` wordt aangemaakt, of de API de producten uit SQLite teruggeeft en of de gegevens na het stoppen en opnieuw starten van de server blijven bestaan.
+
+### Eigen beslissing
+
+Ik gebruik de ingebouwde SQLite-module van Node.js 24. Dit houdt het project klein en begrijpelijk. Ik accepteer daarbij dat het project minimaal een recente Node.js 24-versie nodig heeft.
