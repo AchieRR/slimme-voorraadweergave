@@ -330,3 +330,31 @@ De geplande stappen zijn vergeleken met de verplichte software, security, test-,
 ### Eigen beslissing
 
 Ik bouw eerst alle verplichte onderdelen. Bonusfuncties worden alleen toegevoegd wanneer de basis volledig werkt en getest is.
+
+---
+
+## Interactie 12 - Stap 6: voorraad wijzigen via de API
+
+**Datum:** 26 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Een veilige API-route voor voorraadmutaties
+
+### Volledige prompt van de student
+
+> nu stap 6
+
+### Antwoord en advies van AI
+
+Codex controleerde `database.js`, `server.js`, `.gitignore` en de Git-status. Stap 5 was gecommit en de echte aanvraag naar `GET /api/producten` gaf de drie producten uit SQLite terug. Voor stap 6 adviseerde Codex een `PATCH /api/producten/:id/voorraad`-route. De route ontvangt een geheel getal `verschil`, gebruikt een geparametriseerde en atomaire SQL-update en weigert een wijziging die de voorraad onder nul zou brengen.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg zelf JSON-verwerking en de PATCH-route aan `server.js` toe. Daarna test ik verhogen, verlagen, een onbekend product en een ongeldige negatieve eindvoorraad.
+
+### Controle
+
+Ik controleer de HTTP-statuscodes en JSON-antwoorden, kijk via `GET /api/producten` naar de nieuwe voorraad en herstart de server om te bevestigen dat de wijziging in SQLite blijft staan.
+
+### Eigen beslissing
+
+Ik gebruik één atomaire SQL-update voor een voorraadmutatie. Hierdoor kan een tweede verzoek niet tussen het lezen en schrijven van dezelfde voorraad komen.
