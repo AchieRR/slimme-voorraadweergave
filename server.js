@@ -29,6 +29,60 @@ app.get("/api/producten", (request, response) => {
     }
 });
 
+app.post("/api/producten", (request, response) => {
+    try {
+        const naam = typeof request.body?.naam === "string"
+            ? request.body.naam.trim()
+            : "";
+
+        const voorraad = request.body?.voorraad;
+
+        if (naam.length < 2 || naam.length > 100) {
+            return response.status(400).json({
+                fout: "Naam moet tussen 2 en 100 tekens bevatten."
+            });
+        }
+
+
+        if (
+            !Number.isInteger(voorraad) ||
+            voorraad < 0 ||
+            voorraad > 10000
+        ) {
+            return response.status(400).json({
+                fout: "Voorraad moet een geheel getal tussen 0 en 10000 zijn."
+            });
+        }
+
+        const bestaandProduct = database.prepare(`
+        SELECT id
+        FROM producten
+        WHERE naam = ? COLLATE NOCASE
+    `).get(naam);
+
+        if (bestaandProduct) {
+            return response.status(409).json({
+                fout: "Er bestaat al een product met deze naam."
+            });
+        }
+
+        const product = database.prepare(`
+        INSERT INTO producten (naam, voorraad)
+        VALUES (?, ?)
+        RETURNING id, naam, voorraad, beschikbaar
+    `).get(naam, voorraad);
+
+        return response.status(201).json(product);
+    } catch (error) {
+        console.error("Product toevoegen mislukt:", error);
+
+        return response.status(500).json({
+            fout: "Het product kon niet worden toegevoegd."
+        });
+    }
+});
+
+
 app.patch("/api/producten/:id/voorraad", (request, response) => {
     try {
         const productId = Number(request.params.id);

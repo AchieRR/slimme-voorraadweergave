@@ -131,3 +131,54 @@ h1 {
     cursor: wait;
     opacity: 0.5;
 }
+
+.nieuw-product {
+    margin-bottom: 24px;
+    padding: 20px;
+    background-color: white;
+    border: 3px solid black;
+    border-radius: 8px;
+}
+
+.nieuw-product h2 {
+    margin-top: 0;
+}
+
+#nieuw-product-formulier {
+    display: grid;
+    grid-template-columns: 2fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+}
+
+.veld {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: bold;
+}
+
+.veld input {
+    min-height: 52px;
+    padding: 8px;
+    border: 3px solid black;
+    border-radius: 8px;
+    font-size: 18px;
+}
+
+.toevoegknop {
+    min-height: 52px;
+    padding: 0 18px;
+    border: 3px solid black;
+    border-radius: 8px;
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+@media (max-width: 500px) {
+    #nieuw-product-formulier {
+        grid-template-columns: 1fr;
+    }
+}

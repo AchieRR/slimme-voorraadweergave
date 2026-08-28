@@ -21,6 +21,29 @@
         <p id="melding" class="melding" role="status" aria-live="polite">
         </p>
 
+
+        <section class="nieuw-product">
+            <h2>Nieuw product</h2>
+
+            <form id="nieuw-product-formulier">
+                <div class="veld">
+                    <label for="productnaam">Productnaam</label>
+                    <input id="productnaam" type="text" minlength="2" maxlength="100" required>
+                </div>
+
+                <div class="veld">
+                    <label for="beginvoorraad">Beginvoorraad</label>
+                    <input id="beginvoorraad" type="number" min="0" max="10000" step="1" value="0" required>
+                </div>
+
+                <button class="toevoegknop" type="submit">
+                    Toevoegen
+                </button>
+            </form>
+        </section>
+
+
+
         <section id="beheer-producten" class="producten" aria-label="Producten beheren">
         </section>
     </main>

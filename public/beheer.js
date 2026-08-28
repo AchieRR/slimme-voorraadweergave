@@ -2,6 +2,15 @@ const productenContainer = document.querySelector("#beheer-producten");
 
 const meldingElement = document.querySelector("#melding");
 
+const nieuweProductFormulier =
+    document.querySelector("#nieuw-product-formulier");
+
+const productnaamInvoer =
+    document.querySelector("#productnaam");
+
+const beginvoorraadInvoer =
+    document.querySelector("#beginvoorraad");
+
 function maakProductElement(product) {
     const productElement = document.createElement("article");
     productElement.classList.add("product");
@@ -216,4 +225,52 @@ async function stelVoorraadin(productId, voorraad) {
     }
 }
 
-laadProducten();
+nieuweProductFormulier.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const naam = productnaamInvoer.value.trim();
+    const voorraad = Number(beginvoorraadInvoer.value);
+    const knop = nieuweProductFormulier.querySelector("button");
+
+    knop.disabled = true;
+    meldingElement.textContent = "Product toevoegen...";
+
+    try {
+        const response = await fetch("/api/producten", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                naam: naam,
+                voorraad: voorraad
+            })
+        });
+
+        const resultaat = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                resultaat.fout ||
+                "Het product kon niet worden toegevoegd."
+            );
+        }
+
+        meldingElement.textContent =
+            `${resultaat.naam} is toegevoegd.`;
+
+        nieuweProductFormulier.reset();
+        beginvoorraadInvoer.value = 0;
+
+        await laadProducten();
+    } catch (error) {
+        console.error("Product toevoegen mislukt:", error);
+        meldingElement.textContent = error.message;
+    } finally {
+        knop.disabled = false;
+    }
+});
+
+
+
+laadProducten();        
