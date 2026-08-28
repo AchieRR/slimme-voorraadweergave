@@ -694,3 +694,31 @@ Ik voeg Frisdrank met beginvoorraad 10 opnieuw toe. Een succesvolle aanvraag moe
 ### Eigen beslissing
 
 Ik kies een variabelenaam die beschrijft wat de SELECT-query teruggeeft. De naam `bestaandProduct` maakt duidelijk dat de code eerst controleert of het product al bestaat.
+
+---
+
+## Interactie 25 - Stap 10: veilige medewerkeraccounts voorbereiden
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex met officiële Node.js-documentatie  
+**Onderwerp:** Medewerkers opslaan met gehashte wachtwoorden
+
+### Volledige prompt van de student
+
+> t werkt nu stap 10
+
+### Antwoord en advies van AI
+
+Codex controleerde dat stap 9 was gecommit en dat Frisdrank via de API uit de database werd opgehaald. Als begin van de verplichte authenticatie adviseerde Codex om een tabel `medewerkers` te maken en twee accounts aan te maken. Wachtwoorden worden niet als leesbare tekst opgeslagen, maar met Node.js `scrypt` gehasht met een afzonderlijk willekeurig zout. De echte tijdelijke wachtwoorden komen in het door Git genegeerde `.env`-bestand; alleen lege voorbeeldinstellingen komen in `.env.example`.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg zelf de crypto-import, hashfunctie, medewerkerstabel en eenmalige seedcode aan `database.js` toe. Ik maak lokaal `.env` met twee unieke testwachtwoorden en maak daarnaast een veilige `.env.example` zonder echte geheimen.
+
+### Controle
+
+Ik start een Node-opdracht met `--env-file=.env` en vraag alleen de id's en gebruikersnamen op. Er moeten precies twee medewerkers zichtbaar zijn. Ik controleer daarnaast dat `.env` niet in GitHub Desktop verschijnt en `.env.example` wel.
+
+### Eigen beslissing
+
+Ik gebruik de ingebouwde `node:crypto`-module, zodat geen extra wachtwoordpakket nodig is. Ik publiceer geen echte of hergebruikte wachtwoorden in de openbare repository. Login, sessies en toegangscontrole volgen afzonderlijk, zodat ik ieder beveiligingsonderdeel kan uitleggen en testen.
