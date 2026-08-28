@@ -90,6 +90,50 @@ app.patch("/api/producten/:id/voorraad", (request, response) => {
     }
 });
 
+app.put("/api/producten/:id/voorraad", (request, response) => {
+    try {
+        const productId = Number(request.params.id);
+        const voorraad = request.body?.voorraad;
+
+        if (!Number.isInteger(productId) || productId < 1) {
+            return response.status(400).json({
+                fout: "Het productnummer is ongeldig."
+            });
+        }
+
+        if (
+            !Number.isInteger(voorraad) ||
+            voorraad < 0 ||
+            voorraad > 10000
+        ) {
+            return response.status(400).json({
+                fout: "Voorraad moet een geheel getal tussen 0 en 10000 zijn."
+            });
+        }
+
+        const product = database.prepare(`
+            UPDATE producten
+            SET voorraad = ?
+            WHERE id = ?
+            RETURNING id, naam, voorraad, beschikbaar
+        `).get(voorraad, productId);
+
+        if (!product) {
+            return response.status(404).json({
+                fout: "Product niet gevonden."
+            });
+        }
+
+        return response.json(product);
+    } catch (error) {
+        console.error("Voorraad wijzigen mislukt:", error);
+
+        return response.status(500).json({
+            fout: "De voorraad kon niet worden gewijzigd."
+        });
+    }
+});
+
 app.listen(poort, () => {
     console.log(`Server gestart op http://localhost:${poort}`);
 });

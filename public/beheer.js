@@ -41,10 +41,14 @@ function maakProductElement(product) {
 
     knoppenElement.append(minKnop, plusKnop);
 
+    const instelFormulier =
+        maakiInstelFormulier(product);
+
     productElement.append(
         naamElement,
         voorraadElement,
-        knoppenElement
+        knoppenElement,
+        instelFormulier
     );
 
     return productElement;
@@ -66,6 +70,50 @@ function maakVoorraadKnop(tekst, product, verschil) {
     });
 
     return knop;
+}
+
+function maakiInstelFormulier(product) {
+    const formulier = document.createElement("form");
+    formulier.classList.add("instel-formulier");
+
+    const label = document.createElement("label");
+    label.textContent = "Voorraad instellen:";
+    label.htmlFor = `voorraad-${product.id}`;
+
+    const invoer = document.createElement("input");
+    invoer.id = `voorraad-${product.id}`;
+    invoer.classList.add("voorraad-invoer");
+    invoer.type = "number";
+    invoer.min = 0;
+    invoer.max = 10000;
+    invoer.step = 1;
+    invoer.required = true;
+    invoer.value = product.voorraad;
+
+    const knop = document.createElement("button");
+    knop.classList.add("instelknop");
+    knop.type = "submit";
+    knop.textContent = "Instellen";
+
+    formulier.append(label, invoer, knop);
+
+    formulier.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const nieuweVoorraad = Number(invoer.value);
+
+        knop.disabled = true;
+
+        await stelVoorraadin(
+            product.id,
+            nieuweVoorraad
+        );
+
+        knop.disabled = false;
+
+    });
+
+    return formulier;
 }
 
 async function laadProducten() {
@@ -125,6 +173,44 @@ async function wijzigVoorraad(productId, verschil) {
         await laadProducten();
     } catch (error) {
         console.error("Voorraad wijzigen mislukt:", error);
+
+        meldingElement.textContent = error.message;
+    }
+}
+
+async function stelVoorraadin(productId, voorraad) {
+    meldingElement.textContent =
+        "Voorraad instellen...";
+
+    try {
+        const response = await fetch(
+            `/api/producten/${productId}/voorraad`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    voorraad: voorraad
+                })
+            }
+        );
+
+        const resultaat = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                resultaat.fout ||
+                "De voorraad kon niet worden ingesteld."
+            );
+        }
+
+        meldingElement.textContent =
+            `${resultaat.naam} voorraad is ingesteld op ${resultaat.voorraad}.`;
+
+        await laadProducten();
+    } catch (error) {
+        console.error("Voorraad instellen mislukt:", error);
 
         meldingElement.textContent = error.message;
     }

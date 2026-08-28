@@ -93,3 +93,41 @@ h1 {
         font-size: 34px;
     }
 }
+
+.instel-formulier {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+    margin-top: 18px;
+}
+
+.instel-formulier label {
+    grid-column: 1 / -1;
+    font-weight: bold;
+}
+
+.voorraad-invoer {
+    width: 100%;
+    min-height: 56px;
+    padding: 10px;
+    border: 3px solid black;
+    border-radius: 8px;
+    font-size: 24px;
+}
+
+.instelknop {
+    min-height: 56px;
+    padding: 0 18px;
+    border: 3px solid black;
+    border-radius: 8px;
+    background-color: black;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.instelknop:disabled {
+    cursor: wait;
+    opacity: 0.5;
+}
