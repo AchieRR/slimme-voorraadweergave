@@ -470,3 +470,31 @@ Na de wijziging moeten zowel `GET /api/producten` als `PATCH /api/producten/1/vo
 ### Eigen beslissing
 
 Ik verander bestaande routes niet wanneer ik een nieuwe route toevoeg. Ik controleer vóór het opslaan dat zowel `app.get` als `app.patch` in hetzelfde bestand staan.
+
+---
+
+## Interactie 17 - Stap 7: mobiele beheerpagina
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Voorraad bedienen met plus- en minknoppen
+
+### Volledige prompt van de student
+
+> stap 7
+
+### Antwoord en advies van AI
+
+Codex controleerde dat GET, PATCH en `app.listen` tegelijk in `server.js` aanwezig waren en dat stap 6 was gecommit. Een echte controletest verlaagde melk van 5 naar 4 en verhoogde de voorraad daarna weer naar 5. Vervolgens adviseerde Codex een aparte mobiele beheerpagina met `beheer.html`, `beheer.css` en `beheer.js`. De pagina haalt producten via GET op en gebruikt de bestaande PATCH-route voor plus en min.
+
+### Wat heb ik ermee gedaan?
+
+Ik maak zelf de drie beheerbestanden in de map `public`. Ik bouw eerst de pagina, voeg daarna de styling toe en verbind tot slot de knoppen met de API.
+
+### Controle
+
+Ik test de pagina op `http://localhost:3000/beheer.html`, verlaag en verhoog voorraad, controleer de publieke pagina en controleer dat voorraad nul niet verder kan worden verlaagd.
+
+### Eigen beslissing
+
+De beheerpagina blijft voorlopig lokaal en onbeveiligd. Ik zet de applicatie nog niet online voordat authenticatie en autorisatie zijn toegevoegd.
