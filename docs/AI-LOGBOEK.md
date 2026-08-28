@@ -526,3 +526,31 @@ Ik controleer op mobiel of de tekst leesbaar is, de knoppen gemakkelijk aanraakb
 ### Eigen beslissing
 
 De mobiele netwerktoegang wordt alleen voor lokaal testen gebruikt. De beheerpagina wordt nog niet publiek gehost zolang login en API-beveiliging ontbreken.
+
+---
+
+## Interactie 19 - Stap 8: voorraad exact instellen
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex met Playwright-test  
+**Onderwerp:** Een absoluut voorraadgetal opslaan
+
+### Volledige prompt van de student
+
+> oke stap 8
+
+### Antwoord en advies van AI
+
+Codex controleerde stap 7 in een echte Chrome-browser met een mobiele viewport van 390 bij 844 pixels. Er waren drie productkaarten, zes voorraadknoppen, geen horizontale overloop en geen mislukte netwerkrequests. Via de zichtbare knoppen ging melk van 8 naar 7 en daarna terug naar 8. Voor stap 8 adviseerde Codex een `PUT /api/producten/:id/voorraad`-route waarmee een medewerker de voorraad rechtstreeks op een geheel getal kan instellen.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg zelf de PUT-route aan `server.js` toe en maak in iedere beheerkaart een numeriek invoerveld met een knop `Instellen`.
+
+### Controle
+
+Ik stel een product tijdelijk op een ander getal in, controleer beheerpagina, publieke pagina en API, en zet daarna de oorspronkelijke voorraad terug. Negatieve waarden, decimalen en onbekende productnummers moeten worden geweigerd.
+
+### Eigen beslissing
+
+Ik gebruik PATCH voor relatieve wijzigingen zoals min één en plus één. Ik gebruik PUT voor het rechtstreeks vervangen van het voorraadgetal.
