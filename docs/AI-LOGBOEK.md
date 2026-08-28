@@ -610,3 +610,31 @@ De directe API-test, de browsertest en de handmatige test van de student zijn ge
 ### Eigen beslissing
 
 Ik beschouw stap 8 pas als afgerond nadat zowel de API als de echte gebruikersinterface zijn getest en de testvoorraad is teruggezet.
+
+---
+
+## Interactie 22 - Stap 9: een nieuw product toevoegen
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Producten aanmaken via de mobiele beheerpagina
+
+### Volledige prompt van de student
+
+> stap 9
+
+### Antwoord en advies van AI
+
+Codex controleerde de actuele projectbestanden en vergeleek de vervolgstap met de oorspronkelijke projectopdracht. Daarin staat dat medewerkers producten moeten kunnen aanmaken. Codex adviseerde daarom een `POST /api/producten`-route met validatie voor de productnaam en beginvoorraad, plus een klein formulier op de beheerpagina. Een dubbele productnaam moet statuscode 409 krijgen en een succesvol toegevoegd product statuscode 201.
+
+### Wat heb ik ermee gedaan?
+
+Ik typ zelf de POST-route in `server.js`, voeg het formulier aan `public/beheer.html` toe en verbind het formulier via `public/beheer.js` met de API. Daarna voeg ik eenvoudige mobiele styling toe aan `public/beheer.css`.
+
+### Controle
+
+Ik herstart eerst de server. Daarna voeg ik een testproduct toe, controleer ik of het op de beheerpagina en publieke pagina verschijnt en controleer ik of het na een serverherstart bewaard blijft. Ook test ik een lege naam, negatieve voorraad en een dubbele productnaam.
+
+### Eigen beslissing
+
+Ik bouw product toevoegen vóór authenticatie, zodat ik deze functie eerst afzonderlijk kan begrijpen en testen. De beheerpagina en wijzigende API-routes blijven lokaal totdat beveiligde toegang in de volgende stappen is toegevoegd.
