@@ -414,3 +414,31 @@ Na de herstart moet `GET /api/producten` statuscode 200 geven. Daarna moet de pu
 ### Eigen beslissing
 
 Na iedere wijziging aan servercode herstart ik de Node-server voordat ik opnieuw test. Ik controleer bovendien dat nieuwe routes naast bestaande routes worden toegevoegd.
+
+---
+
+## Interactie 15 - Codex herstart en test de applicatie
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex met HTTP- en Playwright-test  
+**Onderwerp:** Zelfstandig controleren of de producten weer verschijnen
+
+### Volledige prompt van de student
+
+> probeer jij is
+
+### Antwoord en advies van AI
+
+Codex controleerde dat poort 3000 werd gebruikt door het oude proces `node server.js`, stopte alleen dat proces en startte de opgeslagen servercode opnieuw. Daarna gaf `GET /api/producten` statuscode 200 met drie producten. De hoofdpagina en `app.js` gaven eveneens statuscode 200. Met een reeds geïnstalleerde Chrome-browser is de pagina headless geopend. De test vond drie `.product`-elementen: IJsjes met voorraad 0, Verse melk met voorraad 5 en Verse yoghurt met voorraad 3.
+
+### Wat heb ik ermee gedaan?
+
+De server draait opnieuw met de actuele code. Ik kan de pagina openen op `http://localhost:3000` en eventueel hard vernieuwen met `Ctrl + F5`.
+
+### Controle
+
+De API-test gaf status 200. De browsertest telde exact drie producten en een tweede netwerkcontrole vond geen mislukte responses.
+
+### Eigen beslissing
+
+Ik controleer voortaan na een serverwijziging zowel het API-adres als de zichtbare pagina. Zo kan ik onderscheid maken tussen een backendfout en een frontendfout.
