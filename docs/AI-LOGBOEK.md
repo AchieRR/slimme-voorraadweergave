@@ -666,3 +666,31 @@ Na `Stop-Process` moet `Get-NetTCPConnection` geen luisterend proces meer op poo
 ### Eigen beslissing
 
 Ik stop alleen het proces dat bij mijn projectpoort hoort en beëindig niet zonder onderscheid alle Node-processen op mijn computer.
+
+---
+
+## Interactie 24 - Foutdiagnose bij product toevoegen
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex met directe HTTP-test  
+**Onderwerp:** HTTP 500 bij `POST /api/producten`
+
+### Volledige prompt van de student
+
+> ik heb frisdrank proberen te voegen en er staat het product kon niet worden toegevoegd
+
+### Antwoord en advies van AI
+
+Codex reproduceerde de melding met een directe POST-aanvraag voor Frisdrank. De API gaf statuscode 500 en dezelfde JSON-foutmelding als de beheerpagina. In `server.js` werd de uitkomst van de controlequery opgeslagen in `voegProductToe`, maar de volgende regel controleerde de niet-bestaande variabele `bestaandProduct`. Daardoor ontstaat een `ReferenceError` voordat de INSERT wordt uitgevoerd. Codex adviseerde om de variabele bij de query te hernoemen naar `bestaandProduct`.
+
+### Wat heb ik ermee gedaan?
+
+Ik verander zelf alleen `const voegProductToe` bij de SELECT-query in `const bestaandProduct`. Daarna sla ik `server.js` op en herstart ik de Node-server.
+
+### Controle
+
+Ik voeg Frisdrank met beginvoorraad 10 opnieuw toe. Een succesvolle aanvraag moet statuscode 201 geven en het product moet op beide pagina's verschijnen. Daarna test ik dezelfde naam opnieuw; die aanvraag moet statuscode 409 geven.
+
+### Eigen beslissing
+
+Ik kies een variabelenaam die beschrijft wat de SELECT-query teruggeeft. De naam `bestaandProduct` maakt duidelijk dat de code eerst controleert of het product al bestaat.
