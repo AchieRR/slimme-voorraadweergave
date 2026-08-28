@@ -1,0 +1,95 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #f2f2f2;
+    color: black;
+    font-family: Arial, sans-serif;
+}
+
+.beheerpagina {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+header {
+    margin-bottom: 24px;
+}
+
+.locatie {
+    margin: 0;
+    font-weight: bold;
+}
+
+h1 {
+    margin: 8px 0;
+    font-size: 40px;
+}
+
+.melding {
+    min-height: 28px;
+    padding: 12px;
+    font-weight: bold;
+}
+
+.product {
+    margin-bottom: 20px;
+    padding: 20px;
+    background-color: white;
+    border: 3px solid black;
+    border-radius: 8px;
+}
+
+.product h2 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.voorraad {
+    margin: 16px 0;
+    font-size: 24px;
+}
+
+.voorraad strong {
+    font-size: 36px;
+}
+
+.knoppen {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.voorraadknop {
+    min-height: 64px;
+    border: 3px solid black;
+    border-radius: 8px;
+    background-color: white;
+    color: black;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.voorraadknop:active {
+    background-color: black;
+    color: white;
+}
+
+.voorraadknop:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+}
+
+@media (max-width: 500px) {
+    .beheerpagina {
+        padding: 16px;
+    }
+
+    h1 {
+        font-size: 34px;
+    }
+}
