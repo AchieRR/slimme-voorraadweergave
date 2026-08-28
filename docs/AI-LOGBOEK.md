@@ -358,3 +358,31 @@ Ik controleer de HTTP-statuscodes en JSON-antwoorden, kijk via `GET /api/product
 ### Eigen beslissing
 
 Ik gebruik één atomaire SQL-update voor een voorraadmutatie. Hierdoor kan een tweede verzoek niet tussen het lezen en schrijven van dezelfde voorraad komen.
+
+---
+
+## Interactie 13 - Foutdiagnose: Cannot GET /api/producten
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Verdwenen GET-route na het toevoegen van de PATCH-route
+
+### Volledige prompt van de student
+
+> ik zat net bij de 2 commands for terminal om melk min 1 te maken mr er staat nu cannot get Api/producten
+
+### Antwoord en advies van AI
+
+Codex reproduceerde de fout met een echte GET-aanvraag. Zowel `/api/producten` als `/Api/producten` gaf statuscode 404 en `Cannot GET`. Daarna is `server.js` gecontroleerd. De nieuwe PATCH-route stond correct in het bestand, maar de eerdere `app.get("/api/producten")`-route was verdwenen. Een PATCH-aanvraag met het ongeldige verschil nul bereikte de nieuwe route en gaf correct statuscode 400, waarmee werd bevestigd dat de server en PATCH-route wel werkten.
+
+### Wat heb ik ermee gedaan?
+
+Ik plaats de GET-route zelf terug boven de PATCH-route, sla `server.js` op en herstart de server. Daarna test ik eerst GET en vervolgens opnieuw de voorraadwijziging.
+
+### Controle
+
+De fout is reproduceerbaar vastgelegd als HTTP 404. Na de correctie moet `GET /api/producten` statuscode 200 met een JSON-lijst geven en moet `PATCH /api/producten/1/voorraad` een geldig productantwoord geven.
+
+### Eigen beslissing
+
+Wanneer ik een nieuwe route toevoeg, controleer ik voortaan dat bestaande routes blijven staan en test ik iedere route afzonderlijk voordat ik commit.
