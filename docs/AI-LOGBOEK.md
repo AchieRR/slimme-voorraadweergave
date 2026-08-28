@@ -442,3 +442,31 @@ De API-test gaf status 200. De browsertest telde exact drie producten en een twe
 ### Eigen beslissing
 
 Ik controleer voortaan na een serverwijziging zowel het API-adres als de zichtbare pagina. Zo kan ik onderscheid maken tussen een backendfout en een frontendfout.
+
+---
+
+## Interactie 16 - Stap 6 opnieuw afronden
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** PATCH-route toevoegen zonder de GET-route te verwijderen
+
+### Volledige prompt van de student
+
+> oke we moeten nu nog stap 6
+
+### Antwoord en advies van AI
+
+Codex controleerde de actuele `server.js`. De GET-route stond op regel 12 en `app.listen` begon op regel 33; er was geen PATCH-route aanwezig. Codex gaf daarom opnieuw één afgebakend PATCH-codeblok met de uitdrukkelijke instructie om dit tussen de bestaande GET-route en `app.listen` te plaatsen en geen bestaande code te verwijderen.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg zelf de PATCH-route op de aangewezen plaats toe, sla het bestand op en herstart de server. Daarna test ik eerst GET en vervolgens een verlaging en verhoging van de melkvoorraad.
+
+### Controle
+
+Na de wijziging moeten zowel `GET /api/producten` als `PATCH /api/producten/1/voorraad` werken. De eindvoorraad wordt weer teruggezet op de oorspronkelijke waarde.
+
+### Eigen beslissing
+
+Ik verander bestaande routes niet wanneer ik een nieuwe route toevoeg. Ik controleer vóór het opslaan dat zowel `app.get` als `app.patch` in hetzelfde bestand staan.
