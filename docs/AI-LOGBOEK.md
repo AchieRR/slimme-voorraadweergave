@@ -498,3 +498,31 @@ Ik test de pagina op `http://localhost:3000/beheer.html`, verlaag en verhoog voo
 ### Eigen beslissing
 
 De beheerpagina blijft voorlopig lokaal en onbeveiligd. Ik zet de applicatie nog niet online voordat authenticatie en autorisatie zijn toegevoegd.
+
+---
+
+## Interactie 18 - Beheerpagina op mobiel testen
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Responsieve simulatie en testen op een echte telefoon
+
+### Volledige prompt van de student
+
+> hoe testen we dit op mobiel
+
+### Antwoord en advies van AI
+
+Codex adviseerde twee controles: eerst de mobiele apparaatweergave van Chrome DevTools en daarna een echte telefoon op hetzelfde wifi-netwerk. Het lokale wifi-adres van de ontwikkelcomputer was `10.252.34.172`. De draaiende Node-server luisterde op alle interfaces en een echte HTTP-controle van `http://10.252.34.172:3000/beheer.html` gaf statuscode 200 met de titel `Voorraadbeheer`.
+
+### Wat heb ik ermee gedaan?
+
+Ik test de beheerpagina eerst met Chrome Device Toolbar en open daarna op mijn telefoon `http://10.252.34.172:3000/beheer.html` terwijl telefoon en computer hetzelfde wifi-netwerk gebruiken.
+
+### Controle
+
+Ik controleer op mobiel of de tekst leesbaar is, de knoppen gemakkelijk aanraakbaar zijn, min en plus werken en de publieke pagina dezelfde voorraad toont.
+
+### Eigen beslissing
+
+De mobiele netwerktoegang wordt alleen voor lokaal testen gebruikt. De beheerpagina wordt nog niet publiek gehost zolang login en API-beveiliging ontbreken.
