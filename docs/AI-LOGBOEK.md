@@ -638,3 +638,31 @@ Ik herstart eerst de server. Daarna voeg ik een testproduct toe, controleer ik o
 ### Eigen beslissing
 
 Ik bouw product toevoegen vóór authenticatie, zodat ik deze functie eerst afzonderlijk kan begrijpen en testen. De beheerpagina en wijzigende API-routes blijven lokaal totdat beveiligde toegang in de volgende stappen is toegevoegd.
+
+---
+
+## Interactie 23 - Node-server stoppen zonder Ctrl+C
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Het proces op poort 3000 veilig stoppen
+
+### Volledige prompt van de student
+
+> is er een ander manier om de server te stoppen dan control c want t werkt niet bij me
+
+### Antwoord en advies van AI
+
+Codex controleerde welk proces naar poort 3000 luisterde. Dat was `node.exe` met de opdracht `node server.js`. Codex adviseerde om in PowerShell eerst het luisterende proces op poort 3000 op te zoeken en daarna alleen dat proces met `Stop-Process` te stoppen. Het algemene commando om alle Node-processen te beëindigen werd afgeraden, omdat daarmee ook andere Node-programma's kunnen worden afgesloten.
+
+### Wat heb ik ermee gedaan?
+
+Ik gebruik een PowerShell-opdracht die het procesnummer via poort 3000 bepaalt. Daarna start ik de actuele servercode opnieuw met `node server.js`.
+
+### Controle
+
+Na `Stop-Process` moet `Get-NetTCPConnection` geen luisterend proces meer op poort 3000 vinden. Na `node server.js` moet de terminal opnieuw melden dat de server op `http://localhost:3000` is gestart.
+
+### Eigen beslissing
+
+Ik stop alleen het proces dat bij mijn projectpoort hoort en beëindig niet zonder onderscheid alle Node-processen op mijn computer.
