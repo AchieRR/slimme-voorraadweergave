@@ -386,3 +386,31 @@ De fout is reproduceerbaar vastgelegd als HTTP 404. Na de correctie moet `GET /a
 ### Eigen beslissing
 
 Wanneer ik een nieuwe route toevoeg, controleer ik voortaan dat bestaande routes blijven staan en test ik iedere route afzonderlijk voordat ik commit.
+
+---
+
+## Interactie 14 - Producten blijven onzichtbaar na routeherstel
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Oude Node-server draaide nog na wijziging van `server.js`
+
+### Volledige prompt van de student
+
+> ik zie me producten nogsteeds niet
+
+### Antwoord en advies van AI
+
+Codex testte de volledige keten opnieuw. De hoofdpagina en `app.js` werden met statuscode 200 geladen, maar `GET /api/producten` gaf nog steeds statuscode 404. De draaiende Node-server was om 09:13 gestart, terwijl `server.js` om 09:23 was gewijzigd. Hierdoor draaide de server nog met de oude code. Daarnaast bevatte het opgeslagen bestand nu wel de GET-route, maar was de PATCH-route opnieuw verdwenen.
+
+### Wat heb ik ermee gedaan?
+
+Ik plaats GET en PATCH allebei in hetzelfde `server.js`, sla het bestand op, stop de oude server volledig met `Ctrl + C` en start hem opnieuw. Ik open de pagina via `http://localhost:3000` en niet rechtstreeks als lokaal HTML-bestand.
+
+### Controle
+
+Na de herstart moet `GET /api/producten` statuscode 200 geven. Daarna moet de publieke pagina drie `.product`-elementen tonen en moet een geldige PATCH-aanvraag voorraad kunnen wijzigen.
+
+### Eigen beslissing
+
+Na iedere wijziging aan servercode herstart ik de Node-server voordat ik opnieuw test. Ik controleer bovendien dat nieuwe routes naast bestaande routes worden toegevoegd.
