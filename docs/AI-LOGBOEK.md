@@ -582,3 +582,31 @@ De browsertest moet na de correctie een adres zoals `/api/producten/1/voorraad` 
 ### Eigen beslissing
 
 Voor JavaScript template literals met `${...}` gebruik ik altijd backticks. Na het toevoegen van een serverroute herstart ik de server voordat ik de frontend test.
+
+---
+
+## Interactie 21 - Stap 8 werkend bevestigd
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex met HTTP- en Playwright-test  
+**Onderwerp:** PUT-route en beheerformulier definitief controleren
+
+### Volledige prompt van de student
+
+> lm t werkt
+
+### Antwoord en advies van AI
+
+Na het herstarten van de oude Node-server gaf de PUT-route statuscode 200 met JSON. Via de echte mobiele beheerpagina is melk vervolgens gewijzigd van 8 naar 9 en weer teruggezet naar 8. Er waren tijdens deze wijziging en het herstel geen mislukte API-responses. De student bevestigde vervolgens dat de functie ook in de eigen browser werkte.
+
+### Wat heb ik ermee gedaan?
+
+Ik commit de wijzigingen aan `server.js`, `public/beheer.js` en `public/beheer.css` als afgeronde stap 8.
+
+### Controle
+
+De directe API-test, de browsertest en de handmatige test van de student zijn geslaagd. De oorspronkelijke voorraad is na de test hersteld.
+
+### Eigen beslissing
+
+Ik beschouw stap 8 pas als afgerond nadat zowel de API als de echte gebruikersinterface zijn getest en de testvoorraad is teruggezet.
