@@ -554,3 +554,31 @@ Ik stel een product tijdelijk op een ander getal in, controleer beheerpagina, pu
 ### Eigen beslissing
 
 Ik gebruik PATCH voor relatieve wijzigingen zoals min één en plus één. Ik gebruik PUT voor het rechtstreeks vervangen van het voorraadgetal.
+
+---
+
+## Interactie 20 - Foutdiagnose: HTML ontvangen in plaats van JSON
+
+**Datum:** 28 augustus 2026  
+**AI-tool:** Codex met HTTP- en Playwright-test  
+**Onderwerp:** `Unexpected token '<'` bij voorraad instellen
+
+### Volledige prompt van de student
+
+> **Unexpected token '<', "<!DOCTYPE "... is not valid JSON**
+
+### Antwoord en advies van AI
+
+Codex reproduceerde de fout met een echte PUT-aanvraag en een browserklik. De opgeslagen PUT-route stond correct in `server.js`, maar de draaiende server was vóór die wijziging gestart en kende de route nog niet. Daarnaast stond in `beheer.js` het API-adres tussen gewone enkele aanhalingstekens. Daardoor werd `${productId}` niet vervangen. De browser vroeg letterlijk `/api/producten/$%7BproductId%7D/voorraad` aan, kreeg statuscode 404 en ontving een HTML-foutpagina. `response.json()` probeerde deze HTML als JSON te verwerken en veroorzaakte daardoor `Unexpected token '<'`.
+
+### Wat heb ik ermee gedaan?
+
+Ik verander zelf de enkele aanhalingstekens rond het PUT-adres in backticks, sla alle bestanden op en herstart de Node-server. Daarna test ik hetzelfde formulier opnieuw.
+
+### Controle
+
+De browsertest moet na de correctie een adres zoals `/api/producten/1/voorraad` aanvragen, statuscode 200 met JSON ontvangen en de nieuwe voorraad zichtbaar maken.
+
+### Eigen beslissing
+
+Voor JavaScript template literals met `${...}` gebruik ik altijd backticks. Na het toevoegen van een serverroute herstart ik de server voordat ik de frontend test.
