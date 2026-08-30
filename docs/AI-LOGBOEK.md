@@ -778,3 +778,31 @@ De server moet daarna zonder `MODULE_NOT_FOUND` starten en `Server gestart op ht
 ### Eigen beslissing
 
 Ik kopieer bestands- en functienamen exact en lees bij een mislukte start eerst de eerste foutmelding. Ik controleer omgevingsvariabelen alleen op aanwezigheid en lengte, zodat geheimen niet in terminaluitvoer of het logboek terechtkomen.
+
+---
+
+## Interactie 28 - Login en sessie testen
+
+**Datum:** 30 augustus 2026  
+**AI-tool:** Codex met directe HTTP-controle  
+**Onderwerp:** Vervolg nadat de server succesvol is gestart
+
+### Volledige prompt van de student
+
+> oke wat nu dat t gestart is ? want ik had die vorige commands niet gedaan
+
+### Antwoord en advies van AI
+
+Codex legde uit dat de draaiende serverterminal open moet blijven en dat de testcommando's in een tweede PowerShell worden uitgevoerd. Een directe aanvraag naar `/api/sessie` zonder sessiecookie gaf zoals verwacht statuscode 401 met `Niet ingelogd.`. Codex gaf daarna opnieuw de commando's om in te loggen, de ontvangen cookie in een PowerShell-websessie te bewaren en met diezelfde sessie `/api/sessie` op te vragen.
+
+### Wat heb ik ermee gedaan?
+
+Ik laat de server draaien, open een tweede terminal en voer daar de login- en sessietest uit met mijn eigen lokale wachtwoord. Ik deel het wachtwoord niet in de chat of het logboek.
+
+### Controle
+
+De loginroute moet `Inloggen gelukt.` en `medewerker1` teruggeven. De daaropvolgende sessieaanvraag moet dezelfde medewerker teruggeven in plaats van statuscode 401.
+
+### Eigen beslissing
+
+Ik test sessies met dezelfde PowerShell-websessie, omdat de tweede aanvraag anders geen cookie meestuurt en de server mij terecht als niet-ingelogd behandelt.
