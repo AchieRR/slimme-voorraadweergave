@@ -750,3 +750,31 @@ Ik start de server met `node --env-file=.env server.js`. Daarna test ik een verk
 ### Eigen beslissing
 
 De standaard `MemoryStore` van `express-session` wordt alleen voor lokale ontwikkeling gebruikt; sessies verdwijnen bij een serverherstart en deze opslag is niet geschikt voor productie. De wijzigende API-routes worden in stap 12 pas echt achter de login geplaatst, zodat login en autorisatie apart getest kunnen worden.
+
+---
+
+## Interactie 27 - Foutdiagnose bij starten met `.env`
+
+**Datum:** 30 augustus 2026  
+**AI-tool:** Codex met terminalcontrole  
+**Onderwerp:** Node-optie en foutieve importnamen corrigeren
+
+### Volledige prompt van de student
+
+> now ik probeer de server te herstarten met node --env -file =.env server.js mr t lukt allemaal niet
+
+### Antwoord en advies van AI
+
+Codex controleerde zonder geheimen te tonen dat `.env` bestond, beide medewerkerwachtwoorden aanwezig waren en `SESSIE_GEHEIM` de vereiste lengte van 64 tekens had. Poort 3000 was vrij. Het juiste commando is `node --env-file=.env server.js`, zonder spaties binnen de optie. Met dit commando werd een tweede concrete fout zichtbaar: `server.js` importeerde `./wachtwoordden` in plaats van het bestaande bestand `./wachtwoorden`. Ook stond de functienaam in dezelfde import als `controleeerWachtwoord`, terwijl de functie `controleerWachtwoord` heet.
+
+### Wat heb ik ermee gedaan?
+
+Ik corrigeer zelf de twee namen in de import bovenaan `server.js` en start opnieuw met de juiste `--env-file=.env`-optie.
+
+### Controle
+
+De server moet daarna zonder `MODULE_NOT_FOUND` starten en `Server gestart op http://localhost:3000` tonen. Vervolgens test ik de loginroute met een verkeerde en een geldige login.
+
+### Eigen beslissing
+
+Ik kopieer bestands- en functienamen exact en lees bij een mislukte start eerst de eerste foutmelding. Ik controleer omgevingsvariabelen alleen op aanwezigheid en lengte, zodat geheimen niet in terminaluitvoer of het logboek terechtkomen.
