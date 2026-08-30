@@ -722,3 +722,31 @@ Ik start een Node-opdracht met `--env-file=.env` en vraag alleen de id's en gebr
 ### Eigen beslissing
 
 Ik gebruik de ingebouwde `node:crypto`-module, zodat geen extra wachtwoordpakket nodig is. Ik publiceer geen echte of hergebruikte wachtwoorden in de openbare repository. Login, sessies en toegangscontrole volgen afzonderlijk, zodat ik ieder beveiligingsonderdeel kan uitleggen en testen.
+
+---
+
+## Interactie 26 - Stap 11: inloggen met een sessie
+
+**Datum:** 30 augustus 2026  
+**AI-tool:** Codex met officiële Node.js- en Express-documentatie  
+**Onderwerp:** Wachtwoordcontrole en server-side loginstatus
+
+### Volledige prompt van de student
+
+> oke we gaan dor naar stap 11 nu en vanaf nu mag je weer dingen in t logboek stoppen
+
+### Antwoord en advies van AI
+
+Codex controleerde dat stap 10 was gecommit en vroeg de database alleen om de id's en gebruikersnamen. Beide medewerkers waren aanwezig. Voor stap 11 adviseerde Codex `express-session`: de browser bewaart alleen een getekende sessie-ID en de server bewaart welke medewerker is ingelogd. Het ingevoerde wachtwoord wordt opnieuw met scrypt gehasht en met `timingSafeEqual` vergeleken. Een fout gebruikersaccount of wachtwoord krijgt dezelfde algemene 401-melding.
+
+### Wat heb ik ermee gedaan?
+
+Ik installeer zelf `express-session`, breid `wachtwoorden.js` uit met veilige vergelijking en voeg sessiemiddleware, een loginroute en een sessiecontroleroute aan `server.js` toe. Ik maak lokaal een willekeurig sessiegeheim en zet alleen een lege instelling in `.env.example`.
+
+### Controle
+
+Ik start de server met `node --env-file=.env server.js`. Daarna test ik een verkeerde login, een geldige login waarbij een cookie wordt opgeslagen en een tweede aanvraag met die cookie naar `/api/sessie`.
+
+### Eigen beslissing
+
+De standaard `MemoryStore` van `express-session` wordt alleen voor lokale ontwikkeling gebruikt; sessies verdwijnen bij een serverherstart en deze opslag is niet geschikt voor productie. De wijzigende API-routes worden in stap 12 pas echt achter de login geplaatst, zodat login en autorisatie apart getest kunnen worden.
