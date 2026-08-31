@@ -974,3 +974,126 @@ Ik test zonder sessie dat `/beheer.html` doorstuurt naar de loginpagina, test ee
 ### Eigen beslissing
 
 De API blijft de echte beveiligingslaag. De server beschermt daarnaast de beheer-HTML voor een duidelijke gebruikerservaring. De JavaScript- en CSS-bestanden hoeven niet geheim te zijn, omdat zij geen wachtwoorden bevatten en zonder geldige sessie geen wijzigende API-aanvraag kunnen uitvoeren.
+
+---
+
+## Interactie 35 - Loginfout door verkeerde invoereigenschap
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met een geautomatiseerde browsertest  
+**Onderwerp:** `Cannot read properties of null (reading 'trim')` bij het inloggen
+
+### Volledige prompt van de student
+
+> Cannot read properties of null (reading 'trim')
+>
+> bij t inloggen
+
+### Antwoord en advies van AI
+
+Codex bootste een echte login met de lokaal ingestelde testgebruiker na. De test reproduceerde de fout op `public/inloggen.js`, regel 49. Daar wordt `gebruikersnaamInvoer.ariaValueMax.trim()` gebruikt. `ariaValueMax` hoort niet bij de ingevoerde tekst en levert hier `null` op. Daardoor kan `.trim()` niet worden uitgevoerd. Het advies is om alleen `ariaValueMax` te vervangen door `value`.
+
+### Wat heb ik ermee gedaan?
+
+Ik pas zelf regel 49 aan naar `gebruikersnaamInvoer.value.trim()` en sla het bestand op.
+
+### Controle
+
+Na de aanpassing log ik opnieuw in als `medewerker1`. De foutmelding moet verdwijnen en de browser moet doorgaan naar `/beheer.html`.
+
+### Eigen beslissing
+
+Ik gebruik `.value` om tekst uit een invoerveld te lezen. `.trim()` verwijdert alleen overbodige spaties aan het begin en einde van de gebruikersnaam.
+
+---
+
+## Interactie 36 - Serverfout na een geldige login
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met een geautomatiseerde HTTP-sessietest  
+**Onderwerp:** `path.json is not a function` bij het openen van de beheerpagina
+
+### Volledige prompt van de student
+
+> ik kan nu wel inloggen en t geeft me ook aan als ik een verkeerde wachtwoord typ en ik kna inloggen met de goeie alleen als ik ben ik gelogd zie ik deze dan
+>
+> TypeError: path.json is not a function  
+> at C:\Users\ahmad\Documents\ChatGPT\voorraad\server.js:53:14
+
+### Antwoord en advies van AI
+
+Codex voerde een echte HTTP-test uit met een geldige login en sessiecookie. De login gaf statuscode 200, maar `/beheer.html` gaf statuscode 500 met exact dezelfde fout. In `server.js` stond op regel 53 `path.json(__dirname, "public", "beheer.html")`. Het ingebouwde Node-module `path` heeft geen functie `json()`. Voor het samenvoegen van delen van een bestandspad is `path.join()` nodig.
+
+### Wat heb ik ermee gedaan?
+
+Ik vervang zelf op regel 53 alleen `path.json` door `path.join`, sla `server.js` op en herstart de Node-server.
+
+### Controle
+
+Na het herstarten log ik opnieuw in. Een geldige login moet de beheerpagina openen zonder statuscode 500. Een bezoek aan `/beheer.html` zonder sessie moet nog steeds naar `/inloggen.html` doorsturen.
+
+### Eigen beslissing
+
+Ik gebruik `response.json()` om JSON naar de browser te sturen en `path.join()` om een bestandspad op te bouwen. Deze functies hebben verschillende doelen en mogen niet worden verwisseld.
+
+---
+
+## Interactie 37 - HTML-attributen zichtbaar als tekst
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met een gerichte controle van `beheer.html`  
+**Onderwerp:** Foutieve openingstags in de sessiebalk
+
+### Volledige prompt van de student
+
+> t werkt allemaal
+>
+> gadoor
+
+### Antwoord en advies van AI
+
+De login, beveiligde beheerpagina en voorraadfuncties werken. Op de schermafbeelding waren in de sessiebalk echter teksten zoals `class="sessiebalk"` en `id="uitlogknop"` zichtbaar. Codex controleerde de betreffende regels en vond dat het teken `>` bij drie openingstags te vroeg stond. Bijvoorbeeld `<div> class="sessiebalk">` sluit de `div` al direct na `div`, waardoor het attribuut daarna gewone zichtbare tekst wordt. Het advies is om de attributen binnen de openingstags te plaatsen.
+
+### Wat heb ik ermee gedaan?
+
+Ik pas zelf de drie openingstags van `div`, `strong` en `button` in `public/beheer.html` aan. Daarna sla ik het bestand op en vernieuw ik de beheerpagina.
+
+### Controle
+
+Na het vernieuwen mogen `class="sessiebalk"`, `id="medewerkernaam"` en `id="uitlogknop"` niet meer als tekst zichtbaar zijn. De medewerkersnaam moet verschijnen en de knop Uitloggen moet blijven werken.
+
+### Eigen beslissing
+
+HTML-attributen zoals `class`, `id` en `type` horen voor de afsluitende `>` binnen de openingstag te staan.
+
+---
+
+## Interactie 38 - Vreemde beheerindeling en e-ink zonder scroll
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met een geautomatiseerde browsertest en controle van de opdracht-PDF  
+**Onderwerp:** Ontbrekende HTML-sluittags en aparte eisen voor beheer en e-ink
+
+### Volledige prompt van de student
+
+> t ziet er een beetje raar uit
+>
+> en trouwens op t e ink scherm kan je niet scrollen dus laten we daar aan denken
+
+### Antwoord en advies van AI
+
+Codex reproduceerde de vreemde indeling in een schone browser. Het formulier begon rond x=489 en het eerste product rond x=1082. In `beheer.html` bleek de uitlogknop niet te worden afgesloten. Ook de sessiebalk had geen afsluitende tag. Daardoor plaatste de browser de melding, het formulier en de productlijst allemaal binnen de uitlogknop. Het advies is om eerst het complete kleine blok van de sessiebalk correct te maken.
+
+Codex controleerde daarnaast de opdracht-PDF. De publieke pagina is bedoeld voor het e-inkscherm en moet op afstand leesbaar zijn, automatisch vernieuwen en geen wijzigingen toestaan. Het beheergedeelte is een andere gebruikerservaring voor de mobiele telefoon. Een meting van de huidige publieke pagina gaf bij 800x600, 1200x825 en 1280x720 steeds een documenthoogte van 1147 pixels. De pagina past dus nog niet zonder scrollen.
+
+### Wat heb ik ermee gedaan?
+
+Ik herstel zelf eerst de sessiebalk in `public/beheer.html`. Voor de publieke pagina ontwerp ik later een schermvullende indeling die rekening houdt met de echte resolutie en het maximale aantal zichtbare producten.
+
+### Controle
+
+Na de HTML-correctie mag `#melding` in de browser niet meer binnen de uitlogknop staan en moeten formulier en productkaarten weer onder elkaar verschijnen. Voor het e-inkscherm wordt later gecontroleerd dat `scrollHeight` niet groter is dan de schermhoogte op de gekozen doelresolutie.
+
+### Eigen beslissing
+
+Ik behandel de mobiele beheerpagina en de publieke e-inkpagina als twee verschillende interfaces. Zonder bekende schermresolutie en een maximumaantal producten kan ik niet eerlijk garanderen dat onbeperkt veel producten altijd zonder scrollen passen. Deze gegevens moeten daarom nog met de product owner worden vastgesteld.

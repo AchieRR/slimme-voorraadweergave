@@ -44,7 +44,18 @@ function vereisLogin(request, response, next) {
     next();
 }
 
+app.get("/beheer.html", (request, response) => {
+    if (!request.session.medewerker) {
+        return response.redirect("/inloggen.html");
+    }
+
+    return response.sendFile(
+        path.join(__dirname, "public", "beheer.html")
+    );
+});
+
 app.use(express.static(path.join(__dirname, "public")));
+
 
 app.get("/api/producten", (request, response) => {
     try {

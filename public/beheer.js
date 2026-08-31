@@ -11,6 +11,13 @@ const productnaamInvoer =
 const beginvoorraadInvoer =
     document.querySelector("#beginvoorraad");
 
+const medewerkernaamElement =
+    document.querySelector("#medewerkernaam");
+
+const uitlogknop =
+    document.querySelector("#uitlogknop");
+
+
 function maakProductElement(product) {
     const productElement = document.createElement("article");
     productElement.classList.add("product");
@@ -271,6 +278,73 @@ nieuweProductFormulier.addEventListener("submit", async (event) => {
     }
 });
 
+async function controleerSessie() {
+    try {
+        const response = await fetch("/api/sessie");
+
+        if (response.status === 401) {
+            window.location.replace(".inloggen.html");
+            return false;
+        }
+
+        if (!response.ok) {
+            throw new Error(
+                "De sessie kon niet worden gecontroleerd."
+            );
+        }
+
+        const resultaat = await response.json();
+
+        medewerkernaamElement.textContent =
+            resultaat.medewerker.gebruikersnaam;
+
+        return true;
+    } catch (error) {
+        console.error(
+            "Sessie controleren mislukt:",
+            error
+        );
 
 
-laadProducten();        
+        meldingElement.textContent = error.message;
+        return false;
+    }
+}
+
+uitlogknop.addEventListener("click", async () => {
+    uitlogknop.disabled = true;
+
+    try {
+        const response = await fetch(
+            "/api/uitloggen",
+            {
+                method: "POST"
+            }
+        );
+
+        if (!response.ok && response.status !== 401) {
+            const resultaat = await response.json();
+
+            throw new Error(
+                resultaat.fout ||
+                "Uitloggen is mislukt."
+            );
+        }
+
+        window.location.replace("/inloggen.html");
+    } catch (error) {
+        console.error("Uitloggen mislukt:", error);
+        meldingElement.textContent = error.message;
+        uitlogknop.disabled = false;
+    }
+});
+
+async function startBeheer() {
+    const ingelogd = await controleerSessie();
+
+    if (ingelogd) {
+        await laadProducten();
+    }
+}
+
+startBeheer();        

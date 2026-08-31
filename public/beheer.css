@@ -182,3 +182,30 @@ h1 {
         grid-template-columns: 1fr;
     }
 }
+
+.sessiebalk {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 16px;
+    padding: 14px;
+    background-color: white;
+    border: 3px solid black;
+    border-radius: 8px;
+}
+
+.sessiebalk p {
+    margin: 0;
+}
+
+#uitlogknop {
+    min-height: 44px;
+    padding: 0 14px;
+    border: 3px solid black;
+    border-radius: 8px;
+    background-color: white;
+    color: black;
+    font-weight: bold;
+    cursor: pointer;
+}

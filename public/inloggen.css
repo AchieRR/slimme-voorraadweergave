@@ -1,0 +1,84 @@
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    background-color: #f2f2f2;
+    color: black;
+    font-family: Arial, sans-serif;
+}
+
+.inlogpagina {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 32px 20px;
+}
+
+header {
+    margin-bottom: 24px;
+}
+
+.locatie {
+    margin: 0;
+    font-weight: bold;
+}
+
+h1 {
+    margin: 8px 0;
+    font-size: 38px;
+}
+
+#inlogformulier {
+    padding: 24px;
+    background-color: white;
+    border: 3px solid black;
+    border-radius: 8px;
+}
+
+.veld {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
+.veld label {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.veld input {
+    min-height: 56px;
+    padding: 10px;
+    border: 3px solid black;
+    border-radius: 8px;
+    font-size: 20px;
+}
+
+#inlogknop {
+    width: 100%;
+    min-height: 56px;
+    border: 3px solid black;
+    border-radius: 8px;
+    background-color: black;
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#inlogknop:disabled {
+    cursor: wait;
+    opacity: 0.5;
+}
+
+.melding {
+    min-height: 28px;
+    font-weight: bold;
+}
+
+.teruglink {
+    color: black;
+    font-weight: bold;
+}
