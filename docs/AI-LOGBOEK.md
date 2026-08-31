@@ -834,3 +834,31 @@ Ik controleer dat een PATCH-aanvraag zonder cookie statuscode 401 geeft en de vo
 ### Eigen beslissing
 
 Ik beveilig de API server-side, omdat alleen een knop verbergen in de browser geen beveiliging is. De publieke voorraadroute blijft bewust openbaar. De beheerpagina zelf en de visuele login- en uitlogknoppen volgen in stap 13.
+
+---
+
+## Interactie 30 - Testcommando stuurde ongeldige JSON
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met directe HTTP-test  
+**Onderwerp:** Verschil tussen JSON-fout 400 en autorisatiefout 401
+
+### Volledige prompt van de student
+
+> HTTP/1.1 400 Bad Request ... SyntaxError: Expected property name or '}' in JSON ... ik probeerde te wijzigen zonder login en kreeg denk ik 400 error
+
+### Antwoord en advies van AI
+
+Codex stelde vast dat de getoonde status inderdaad 400 was. De meegestuurde tekst was door de combinatie van PowerShell en `curl` echter geen geldige JSON meer. Daarom stopte `express.json()` de aanvraag voordat `vereisLogin` werd uitgevoerd. Codex controleerde dat de middleware correct op de POST-, PATCH- en PUT-routes stond en herhaalde de test met JSON die via `ConvertTo-Json` werd gemaakt. Deze aanvraag gaf de verwachte statuscode 401 met `Je moet eerst inloggen.`
+
+### Wat heb ik ermee gedaan?
+
+Ik gebruik in PowerShell voortaan een hashtable met `ConvertTo-Json` en stuur de uitkomst als requestbody. Zo hoef ik JSON-aanhalingstekens niet handmatig voor `curl` te escapen.
+
+### Controle
+
+De geldige anonieme PATCH-aanvraag gaf statuscode 401. Product 1 bleef Verse melk met voorraad 8; de geweigerde test heeft de voorraad dus niet veranderd.
+
+### Eigen beslissing
+
+Ik maak onderscheid tussen invoerparsing en autorisatie: status 400 betekende hier dat de server de JSON niet kon lezen, terwijl status 401 bewijst dat geldige invoer door de logincontrole wordt geweigerd.
