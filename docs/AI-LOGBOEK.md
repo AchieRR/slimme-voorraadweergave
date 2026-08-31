@@ -806,3 +806,31 @@ De loginroute moet `Inloggen gelukt.` en `medewerker1` teruggeven. De daaropvolg
 ### Eigen beslissing
 
 Ik test sessies met dezelfde PowerShell-websessie, omdat de tweede aanvraag anders geen cookie meestuurt en de server mij terecht als niet-ingelogd behandelt.
+
+---
+
+## Interactie 29 - Stap 12: wijzigende API-routes beveiligen
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met HTTP-test en officiële Express-documentatie  
+**Onderwerp:** Autorisatiemiddleware en uitloggen
+
+### Volledige prompt van de student
+
+> stap 12
+
+### Antwoord en advies van AI
+
+Codex controleerde dat stap 11 was gecommit. Een echte login met de lokale omgevingsvariabele gaf statuscode 200, zette een sessiecookie en `/api/sessie` herkende daarna `medewerker1`; het wachtwoord werd niet getoond. Voor stap 12 adviseerde Codex herbruikbare Express-middleware `vereisLogin`. Deze middleware geeft statuscode 401 wanneer geen medewerker in de sessie staat en roept anders `next()` aan. De POST-, PATCH- en PUT-routes voor producten krijgen deze controle. Daarnaast wordt een uitlogroute toegevoegd die de sessie vernietigt en de cookie verwijdert.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg zelf `vereisLogin` aan `server.js` toe, plaats deze middleware vóór iedere wijzigende productroute en maak `POST /api/uitloggen`. De publieke GET-route blijft zonder login bereikbaar.
+
+### Controle
+
+Ik controleer dat een PATCH-aanvraag zonder cookie statuscode 401 geeft en de voorraad niet wijzigt. Na een geldige login moet verhogen en terugverlagen wel werken. Na uitloggen moeten `/api/sessie` en een nieuwe wijzigingsaanvraag opnieuw statuscode 401 geven.
+
+### Eigen beslissing
+
+Ik beveilig de API server-side, omdat alleen een knop verbergen in de browser geen beveiliging is. De publieke voorraadroute blijft bewust openbaar. De beheerpagina zelf en de visuele login- en uitlogknoppen volgen in stap 13.
