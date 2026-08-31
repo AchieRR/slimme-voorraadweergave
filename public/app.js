@@ -48,6 +48,39 @@ async function laadProducten() {
 
         const producten = await response.json();
 
+        const aantalProducten = producten.length;
+        const liggendScherm = window.innerWidth >= window.innerHeight;
+        const schermFactor = liggendScherm ? 1.5 : 0.75;
+
+        let kolommen;
+
+        if (aantalProducten <= 2) {
+            kolommen = Math.max(aantalProducten, 1);
+        } else if (aantalProducten <= 4) {
+            kolommen = 2;
+        } else {
+            kolommen = Math.ceil(
+                Math.sqrt(aantalProducten * schermFactor)
+            );
+        }
+
+        const rijen = Math.max(
+            1,
+            Math.ceil(aantalProducten / kolommen)
+        );
+
+        productenContainer.dataset.aantal = aantalProducten;
+
+        productenContainer.style.setProperty(
+            "--kolommen",
+            kolommen
+        );
+
+        productenContainer.style.setProperty(
+            "--rijen",
+            rijen
+        );
+
         productenContainer.replaceChildren();
 
         for (const product of producten) {

@@ -1097,3 +1097,89 @@ Na de HTML-correctie mag `#melding` in de browser niet meer binnen de uitlogknop
 ### Eigen beslissing
 
 Ik behandel de mobiele beheerpagina en de publieke e-inkpagina als twee verschillende interfaces. Zonder bekende schermresolutie en een maximumaantal producten kan ik niet eerlijk garanderen dat onbeperkt veel producten altijd zonder scrollen passen. Deze gegevens moeten daarom nog met de product owner worden vastgesteld.
+
+---
+
+## Interactie 39 - Stap 13 afgerond en stap 14 bepaald
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met een geautomatiseerde mobiele browsertest  
+**Onderwerp:** Voortgang bepalen na de visuele loginpagina
+
+### Volledige prompt van de student
+
+> welke stap ben ik nu en welke is de volgende
+
+### Antwoord en advies van AI
+
+Codex controleerde stap 13 opnieuw in een browservenster van 390 bij 844 pixels. Zes controles slaagden: zonder sessie wordt de loginpagina geopend, een geldige login opent het beheer, de medewerkersnaam is zichtbaar, de pagina-inhoud staat niet meer in de uitlogknop, er is geen horizontale overloop en uitloggen keert terug naar de loginpagina. Stap 13 is daarmee afgerond. Stap 14 wordt het geschikt maken van de publieke voorraadpagina voor een vast e-inkscherm zonder scrollen.
+
+### Wat heb ik ermee gedaan?
+
+Ik ga hierna in kleine delen werken aan de schermvullende publieke e-inkweergave. De mobiele beheerpagina blijft een afzonderlijke interface.
+
+### Controle
+
+De verificatietest gaf `6/6 controles geslaagd`. Voor stap 14 wordt de publieke pagina op een gekozen doelresolutie getest met de eis dat de documenthoogte niet groter is dan de schermhoogte.
+
+### Eigen beslissing
+
+Ik rond stap 13 pas af na een verse browsertest. In stap 14 kies ik niet zomaar een willekeurige resolutie als definitieve eis; de schermresolutie en het maximale aantal zichtbare producten moeten worden bevestigd.
+
+---
+
+## Interactie 40 - Stap 14 gestart: e-inkpagina zonder scroll
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met responsive browsertests  
+**Onderwerp:** Flexibele schermvullende voorraadweergave voor een 9-inch scherm
+
+### Volledige prompt van de student
+
+> nou de scher resolutie weten hun ook zelf nog niet want hijs niet binnen mr hij zei dat we moeten uitgaan van een 9inch scherm en alle producten moeten zichtbaar zijn
+>
+> mr oke we gaan door naar stap 14
+
+### Antwoord en advies van AI
+
+Codex legde uit dat 9 inch de fysieke schermgrootte beschrijft en nog niet de pixelresolutie of beeldverhouding. Daarom wordt de publieke pagina niet voor één vaste resolutie gemaakt, maar met `100vh`, CSS Grid en flexibele lettergroottes. JavaScript berekent op basis van het aantal producten hoeveel rijen en kolommen nodig zijn. De e-inkstijl blijft zwart-wit, contrastrijk, rustig en zonder animaties.
+
+### Wat heb ik ermee gedaan?
+
+Ik pas zelf eerst `public/app.js` aan zodat het aantal rijen en kolommen wordt berekend. Daarna vervang ik de opmaak van `public/style.css` door de schermvullende grid-opmaak.
+
+### Controle
+
+Codex testte de voorgestelde indeling tijdelijk, zonder bronbestanden te veranderen. Met de vijf huidige producten paste alles zonder scrollen op 800x600, 1200x825 en 1280x720. Op iedere resolutie bleven alle vijf productkaarten volledig binnen het scherm.
+
+### Eigen beslissing
+
+Ik kies voor een responsive oplossing omdat de definitieve resolutie nog onbekend is. Alle huidige producten moeten zichtbaar blijven, maar bij een onbeperkt aantal producten worden vakken en tekst onvermijdelijk steeds kleiner. Zodra het echte scherm binnen is, voer ik daarom opnieuw een praktijktest uit.
+
+---
+
+## Interactie 41 - Publieke voorraad tijdelijk niet beschikbaar
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met een browsertest en browserconsole  
+**Onderwerp:** JavaScript-runtimefout in de nieuwe gridberekening
+
+### Volledige prompt van de student
+
+> ik heb t gedaan en ik probeer de publieke scherm te checken mr er staat de voorraad is tijdelijk niet beschikbaar
+
+### Antwoord en advies van AI
+
+Codex reproduceerde de melding op de echte publieke pagina. De pagina en `/api/producten` gaven allebei statuscode 200, waardoor een server- of API-storing werd uitgesloten. De browserconsole meldde `productenContainer.computedStyleMap.setProperty is not a function` op regel 74 van `app.js`. Bij het overtypen was `computedStyleMap` gebruikt in plaats van `style`. Daardoor ontstond tijdens het opbouwen van de grid een runtimefout en kwam `laadProducten()` in het `catch`-blok terecht.
+
+### Wat heb ik ermee gedaan?
+
+Ik vervang zelf op regel 74 alleen `computedStyleMap` door `style`, sla `public/app.js` op en vernieuw de publieke pagina met `Ctrl + F5`.
+
+### Controle
+
+Na de correctie moeten de producten terugkomen, mag de tijdelijke foutmelding niet meer zichtbaar zijn en mag de browserconsole deze TypeError niet meer tonen. Daarna wordt opnieuw gecontroleerd of alle producten zonder scrollen passen.
+
+### Eigen beslissing
+
+Ik controleer bij een algemene gebruikersmelding ook de browserconsole. De gebruiksvriendelijke tekst verbergt bewust technische details, maar de console toont welke JavaScript-regel werkelijk misging.
