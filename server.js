@@ -34,6 +34,16 @@ app.use(session({
     }
 }));
 
+function vereisLogin(request, response, next) {
+    if (!request.session.medewerker) {
+        return response.status(401).json({
+            fout: "Je moet eerst inloggen."
+        });
+    }
+
+    next();
+}
+
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/api/producten", (request, response) => {
@@ -74,8 +84,8 @@ app.post("/api/inloggen", (request, response) => {
             wachtwoord.length < 1 ||
             wachtwoord.length > 200
         ) {
-            return response.status(404).json({
-                fout: "vol een geldige gebruikrsnaam en wachtwoord in."
+            return response.status(400).json({
+                fout: "Vul een geldige gebruikersnaam en wachtwoord in."
             });
         }
 
@@ -98,7 +108,7 @@ app.post("/api/inloggen", (request, response) => {
             );
 
         if (!geldigeWachtwoord) {
-            return response.status(404).json({
+            return response.status(401).json({
                 fout: "Ongeldige gebruikersnaam of wachtwoord."
             });
         }
@@ -143,9 +153,30 @@ app.get("/api/sessie", (request, response) => {
     });
 });
 
+app.post("/api/uitloggen", vereisLogin, (request, response) => {
+    request.session.destroy((error) => {
+        if (error) {
+            console.error("Uitloggen mislukt:", error);
+
+            return response.status(500).json({
+                fout: "Uitloggen is tijdelijk niet mogelijk."
+            });
+        }
+
+        response.clearCookie(
+            "voorraad.sid",
+            { path: "/" }
+        );
+
+        return response.json({
+            melding: "Je bent uitgelogd."
+        });
+    });
+}
+);
 
 
-app.post("/api/producten", (request, response) => {
+app.post("/api/producten", vereisLogin, (request, response) => {
     try {
         const naam = typeof request.body?.naam === "string"
             ? request.body.naam.trim()
@@ -199,7 +230,7 @@ app.post("/api/producten", (request, response) => {
 });
 
 
-app.patch("/api/producten/:id/voorraad", (request, response) => {
+app.patch("/api/producten/:id/voorraad", vereisLogin, (request, response) => {
     try {
         const productId = Number(request.params.id);
         const verschil = request.body?.verschil;
@@ -260,7 +291,7 @@ app.patch("/api/producten/:id/voorraad", (request, response) => {
     }
 });
 
-app.put("/api/producten/:id/voorraad", (request, response) => {
+app.put("/api/producten/:id/voorraad", vereisLogin, (request, response) => {
     try {
         const productId = Number(request.params.id);
         const voorraad = request.body?.voorraad;
