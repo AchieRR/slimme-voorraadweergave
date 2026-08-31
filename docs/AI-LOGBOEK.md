@@ -918,3 +918,31 @@ Stap 12 is inhoudelijk geïmplementeerd, maar wordt pas definitief afgerond wann
 ### Eigen beslissing
 
 Ik maak onderscheid tussen correcte opgeslagen code en daadwerkelijk draaiende code. Een stap wordt pas klaar genoemd nadat ook het actieve proces met de nieuwe code is getest.
+
+---
+
+## Interactie 33 - Stap 12 live geverifieerd
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met verse HTTP-verificatietest  
+**Onderwerp:** Vrije poort en succesvolle serverherstart
+
+### Volledige prompt van de student
+
+> ik krijg een error ... Get-NetTCPConnection ... No matching ... Stop-Process ... Id is null ... Server gestart op http://localhost:3000
+
+### Antwoord en advies van AI
+
+Codex legde uit dat de meldingen ontstonden doordat er op dat moment geen proces naar poort 3000 luisterde. Er was dus niets om te stoppen en daardoor bleef het procesnummer leeg. De daaropvolgende melding `Server gestart op http://localhost:3000` bevestigde dat de nieuwe server wel succesvol was gestart. Codex herhaalde daarna twee live tests op het herstartte proces.
+
+### Wat heb ik ermee gedaan?
+
+Ik gebruik voortaan `-ErrorAction SilentlyContinue` en voer `Stop-Process` alleen uit wanneer daadwerkelijk een luisterend proces is gevonden. Daarna start ik de server normaal.
+
+### Controle
+
+Een verkeerde login gaf statuscode 401 met `Ongeldige gebruikersnaam of wachtwoord.`. Een geldige anonieme PATCH-aanvraag gaf statuscode 401 met `Je moet eerst inloggen.`. Hiermee is de beveiliging uit stap 12 live bevestigd.
+
+### Eigen beslissing
+
+Ik beschouw `geen proces gevonden` niet als een serverfout wanneer poort 3000 al vrij is. Stap 12 is technisch afgerond; de bijbehorende `server.js` wordt nog door mij gecommit.
