@@ -890,3 +890,31 @@ Alle vijf JavaScriptbestanden slaagden voor `node --check`. De databasevoorraad 
 ### Eigen beslissing
 
 Ik beschouw een 400 bij onleesbare JSON als correct gedrag en een 401 bij geldige JSON zonder geldige sessie als correct autorisatiegedrag. Ik verander de volgorde van middleware daarom niet alleen om ieder anoniem verzoek geforceerd 401 te laten geven.
+
+---
+
+## Interactie 32 - Afrondingsstatus van stap 12
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met verse syntaxis- en HTTP-controle  
+**Onderwerp:** Controleren of stap 12 definitief klaar is
+
+### Volledige prompt van de student
+
+> dus is stap 12 klaar of ?
+
+### Antwoord en advies van AI
+
+Codex controleerde dat de opgeslagen `server.js` de laatste correctie bevat: een verkeerde login retourneert in het bestand statuscode 401 en POST, PATCH en PUT gebruiken `vereisLogin`. `node --check server.js` slaagde. De live server gaf bij dezelfde verkeerde login echter nog statuscode 404. Dit bewijst dat het draaiende Node-proces nog de oudere servercode gebruikt.
+
+### Wat heb ik ermee gedaan?
+
+Ik herstart zelf de server met `node --env-file=.env server.js`, herhaal de verkeerde-login-test en commit daarna `server.js` wanneer de live response statuscode 401 geeft.
+
+### Controle
+
+Stap 12 is inhoudelijk geïmplementeerd, maar wordt pas definitief afgerond wanneer de herstartte server de actuele code gebruikt, de live test 401 geeft en de wijziging is gecommit.
+
+### Eigen beslissing
+
+Ik maak onderscheid tussen correcte opgeslagen code en daadwerkelijk draaiende code. Een stap wordt pas klaar genoemd nadat ook het actieve proces met de nieuwe code is getest.
