@@ -3,9 +3,36 @@ const database = require("./database");
 const express = require("express");
 const path = require("path");
 
+const session = require("express-session");
+
+const {
+    controleerWachtwoord
+} = require("./wachtwoorden");
+
 const app = express();
 const poort = 3000;
 app.use(express.json());
+
+const sessieGeheim = process.env.SESSIE_GEHEIM;
+
+if (!sessieGeheim || sessieGeheim.length < 64) {
+    throw new Error(
+        "SESSIE_GEHEIM ontbreekt of is te kort."
+    )
+}
+
+app.use(session({
+    name: "voorraad.sid",
+    secret: sessieGeheim,
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false,
+        maxAge: 8 * 60 * 60 * 1000
+    }
+}));
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -28,6 +55,95 @@ app.get("/api/producten", (request, response) => {
         });
     }
 });
+
+app.post("/api/inloggen", (request, response) => {
+    try {
+        const gebruikersnaam =
+            typeof request.body?.gebruikersnaam === "string"
+                ? request.body.gebruikersnaam.trim()
+                : "";
+
+        const wachtwoord =
+            typeof request.body?.wachtwoord === "string"
+                ? request.body.wachtwoord
+                : "";
+
+        if (
+            gebruikersnaam.length < 2 ||
+            gebruikersnaam.length > 100 ||
+            wachtwoord.length < 1 ||
+            wachtwoord.length > 200
+        ) {
+            return response.status(404).json({
+                fout: "vol een geldige gebruikrsnaam en wachtwoord in."
+            });
+        }
+
+        const medewerker = database.prepare(`
+            SELECT
+                id,
+                gebruikersnaam,
+                wachtwoord_hash,
+                zout
+            FROM medewerkers
+            WHERE gebruikersnaam = ? 
+        `).get(gebruikersnaam);
+
+        const geldigeWachtwoord =
+            medewerker &&
+            controleerWachtwoord(
+                wachtwoord,
+                medewerker.zout,
+                medewerker.wachtwoord_hash
+            );
+
+        if (!geldigeWachtwoord) {
+            return response.status(404).json({
+                fout: "Ongeldige gebruikersnaam of wachtwoord."
+            });
+        }
+
+        request.session.regenerate((error) => {
+            if (error) {
+                console.error("Sessie regenereren mislukt:", error);
+
+                return response.status(500).json({
+                    fout: "Inloggen mislukt."
+                });
+            }
+
+            request.session.medewerker = {
+                id: medewerker.id,
+                gebruikersnaam: medewerker.gebruikersnaam
+            };
+
+            return response.json({
+                melding: "Inloggen gelukt.",
+                medewerker: request.session.medewerker
+            });
+        });
+    } catch (error) {
+        console.error("Inloggen mislukt:", error);
+
+        return response.status(500).json({
+            fout: "Inloggen is tijdelijk niet mogelijk."
+        });
+    }
+});
+
+app.get("/api/sessie", (request, response) => {
+    if (!request.session.medewerker) {
+        return response.status(401).json({
+            fout: "Niet ingelogd."
+        });
+    }
+
+    return response.json({
+        medewerker: request.session.medewerker
+    });
+});
+
+
 
 app.post("/api/producten", (request, response) => {
     try {

@@ -1,6 +1,7 @@
 const {
     randomBytes,
-    scryptSync
+    scryptSync,
+    timingSafeEqual
 } = require("node:crypto");
 
 const scryptOpties = {
@@ -23,7 +24,29 @@ function maakWachtwoordHash(wachtwoord, zout) {
     ).toString("hex");
 }
 
+function controleerWachtwoord(
+    wachtwoord,
+    zout,
+    opgeslagenHash
+) {
+    const berekendeHash =
+        maakWachtwoordHash(wachtwoord, zout);
+
+    const berekendeBuffer =
+        Buffer.from(berekendeHash, "hex");
+
+    const opgeslagenBuffer =
+        Buffer.from(opgeslagenHash, "hex");
+
+    return (
+        berekendeBuffer.length === opgeslagenBuffer.length &&
+        timingSafeEqual(berekendeBuffer, opgeslagenBuffer)
+    );
+}
+
+
 module.exports = {
     maakZout,
-    maakWachtwoordHash
+    maakWachtwoordHash,
+    controleerWachtwoord
 };
