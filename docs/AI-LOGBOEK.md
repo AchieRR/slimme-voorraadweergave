@@ -862,3 +862,31 @@ De geldige anonieme PATCH-aanvraag gaf statuscode 401. Product 1 bleef Verse mel
 ### Eigen beslissing
 
 Ik maak onderscheid tussen invoerparsing en autorisatie: status 400 betekende hier dat de server de JSON niet kon lezen, terwijl status 401 bewijst dat geldige invoer door de logincontrole wordt geweigerd.
+
+---
+
+## Interactie 31 - Volledige codebase- en API-controle na stap 12
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met syntaxcontrole, HTTP-integratietest en dependency-audit  
+**Onderwerp:** Verklaring van status 400 en controle op fouten
+
+### Volledige prompt van de student
+
+> wrm kreeg ik 400 en niet 401 en check me code base kijk of er iets fouts in zit
+
+### Antwoord en advies van AI
+
+Codex legde uit dat `express.json()` als algemene middleware vóór de routegebonden `vereisLogin` wordt uitgevoerd. Ongeldige JSON stopt daarom met status 400 voordat de logincontrole wordt bereikt. Daarna las Codex alle applicatiebestanden en controleerde de JavaScript-syntaxis. Een integratietest bevestigde: publieke GET 200, anonieme POST/PATCH/PUT alle 401, geldige login 200 met cookie, sessie 200, dubbel product 409, ongeldige wijziging 400, geldige wijziging 200, uitloggen 200 en sessie daarna 401. De melkvoorraad is tijdens de herstelbare test van 8 naar 9 en terug naar 8 gezet. `npm audit` vond geen bekende kwetsbaarheden.
+
+### Wat heb ik ermee gedaan?
+
+Ik corrigeer zelf in de loginroute de statuscode voor een verkeerde gebruikersnaam of verkeerd wachtwoord van 404 naar 401. De overige kleine tekst- en naamverbeteringen kan ik in een aparte opruimstap uitvoeren.
+
+### Controle
+
+Alle vijf JavaScriptbestanden slaagden voor `node --check`. De databasevoorraad was na de test gelijk aan de beginwaarde. De directe functionele fout die werd gevonden is dat een verkeerde login nog statuscode 404 geeft in plaats van 401.
+
+### Eigen beslissing
+
+Ik beschouw een 400 bij onleesbare JSON als correct gedrag en een 401 bij geldige JSON zonder geldige sessie als correct autorisatiegedrag. Ik verander de volgorde van middleware daarom niet alleen om ieder anoniem verzoek geforceerd 401 te laten geven.
