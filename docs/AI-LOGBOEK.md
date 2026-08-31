@@ -946,3 +946,31 @@ Een verkeerde login gaf statuscode 401 met `Ongeldige gebruikersnaam of wachtwoo
 ### Eigen beslissing
 
 Ik beschouw `geen proces gevonden` niet als een serverfout wanneer poort 3000 al vrij is. Stap 12 is technisch afgerond; de bijbehorende `server.js` wordt nog door mij gecommit.
+
+---
+
+## Interactie 34 - Stap 13: visuele loginpagina
+
+**Datum:** 31 augustus 2026  
+**AI-tool:** Codex met officiële Express-documentatie  
+**Onderwerp:** Beheerpagina afschermen en in- en uitloggen via de browser
+
+### Volledige prompt van de student
+
+> oke en nu stap 13
+
+### Antwoord en advies van AI
+
+Codex controleerde dat stap 12 was gecommit en de repository schoon was. Voor stap 13 adviseerde Codex een beveiligde serverroute voor `/beheer.html` vóór `express.static`, omdat Express middleware in volgorde uitvoert. Zonder sessie wordt de gebruiker naar `/inloggen.html` gestuurd. De nieuwe bestanden `inloggen.html`, `inloggen.css` en `inloggen.js` verzorgen het formulier en roepen de bestaande login-API aan. De beheerpagina krijgt daarnaast de ingelogde gebruikersnaam en een uitlogknop.
+
+### Wat heb ik ermee gedaan?
+
+Ik typ zelf de beveiligde beheerroute in `server.js`, maak de drie loginbestanden in `public` en voeg de sessiebalk, sessiecontrole en uitlogactie aan de bestaande beheerbestanden toe.
+
+### Controle
+
+Ik test zonder sessie dat `/beheer.html` doorstuurt naar de loginpagina, test een verkeerd en correct wachtwoord, controleer dat de beheerpagina daarna opent, test een voorraadwijziging en controleer dat uitloggen terugstuurt naar de loginpagina. De publieke startpagina moet zonder login bereikbaar blijven.
+
+### Eigen beslissing
+
+De API blijft de echte beveiligingslaag. De server beschermt daarnaast de beheer-HTML voor een duidelijke gebruikerservaring. De JavaScript- en CSS-bestanden hoeven niet geheim te zijn, omdat zij geen wachtwoorden bevatten en zonder geldige sessie geen wijzigende API-aanvraag kunnen uitvoeren.
