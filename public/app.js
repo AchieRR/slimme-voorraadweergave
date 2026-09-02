@@ -1,5 +1,8 @@
 const productenContainer = document.querySelector("#producten");
 
+const verbindingsstatusElement =
+    document.querySelector("#verbindingsstatus");
+
 function maakProductElement(product) {
     const isUitverkocht = product.voorraad === 0;
 
@@ -58,6 +61,7 @@ async function laadProducten() {
         }
 
         const producten = await response.json();
+        verbindingsstatusElement.textContent = "";
 
         const aantalProducten = producten.length;
         const liggendScherm = window.innerWidth >= window.innerHeight;
@@ -99,10 +103,24 @@ async function laadProducten() {
             productenContainer.append(productElement);
         }
     } catch (error) {
-        console.error("Producten ophalen mislukt:", error);
+        console.error(
+            "Producten ophalen mislukt:",
+            error
+        );
 
-        productenContainer.textContent =
-            "De voorraad is tijdelijk niet beschikbaar.";
+        const heeftBestaandeProducten =
+            productenContainer.querySelector(".product") !== null;
+
+        if (heeftBestaandeProducten) {
+            verbindingsstatusElement.textContent =
+                "Geen verbinding. De laatst geladen voorraad wordt getoond.";
+        } else {
+            verbindingsstatusElement.textContent =
+                "Geen verbinding met de voorraad.";
+
+            productenContainer.textContent =
+                "De voorraad is tijdelijk niet beschikbaar.";
+        }
     }
 }
 

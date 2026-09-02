@@ -17,6 +17,26 @@ const medewerkernaamElement =
 const uitlogknop =
     document.querySelector("#uitlogknop");
 
+async function leesApiAntwoord(response) {
+    if (response.status === 401) {
+        window.location.replace("/inloggen.html");
+
+        throw new Error(
+            "Je sessie is verlopen. Log opnieuw in."
+        );
+    }
+
+    const inhoudstype =
+        response.headers.get("content-type") || "";
+
+    if (!inhoudstype.includes("application/json")) {
+        throw new Error(
+            "De server gaf een onverwacht antwoord. Probeer het opnieuw."
+        );
+    }
+
+    return response.json();
+}
 
 function maakProductElement(product) {
     const productElement = document.createElement("article");
@@ -187,7 +207,7 @@ async function laadProducten() {
             throw new Error(`API-fout: ${response.status}`);
         }
 
-        const producten = await response.json();
+        const producten = await leesApiAntwoord(response);
 
         productenContainer.replaceChildren();
 
@@ -223,7 +243,7 @@ async function wijzigVoorraad(productId, verschil) {
             }
         );
 
-        const resultaat = await response.json();
+        const resultaat = await leesApiAntwoord(response);
 
         if (!response.ok) {
             throw new Error(resultaat.fout || "De voorraad kon niet worden gewijzigd."
@@ -259,7 +279,7 @@ async function stelVoorraadin(productId, voorraad) {
             }
         );
 
-        const resultaat = await response.json();
+        const resultaat = await leesApiAntwoord(response);
 
         if (!response.ok) {
             throw new Error(
@@ -300,7 +320,7 @@ async function stelBeschikbaarheid(
             }
         );
 
-        const resultaat = await response.json();
+        const resultaat = await leesApiAntwoord(response);
 
         if (!response.ok) {
             throw new Error(
@@ -350,7 +370,7 @@ nieuweProductFormulier.addEventListener("submit", async (event) => {
             })
         });
 
-        const resultaat = await response.json();
+        const resultaat = await leesApiAntwoord(response);
 
         if (!response.ok) {
             throw new Error(
@@ -379,7 +399,7 @@ async function controleerSessie() {
         const response = await fetch("/api/sessie");
 
         if (response.status === 401) {
-            window.location.replace(".inloggen.html");
+            window.location.replace("/inloggen.html");
             return false;
         }
 
@@ -389,7 +409,7 @@ async function controleerSessie() {
             );
         }
 
-        const resultaat = await response.json();
+        const resultaat = await leesApiAntwoord(response);
 
         medewerkernaamElement.textContent =
             resultaat.medewerker.gebruikersnaam;
@@ -419,7 +439,7 @@ uitlogknop.addEventListener("click", async () => {
         );
 
         if (!response.ok && response.status !== 401) {
-            const resultaat = await response.json();
+            const resultaat = await leesApiAntwoord(response);
 
             throw new Error(
                 resultaat.fout ||

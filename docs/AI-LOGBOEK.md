@@ -1357,3 +1357,121 @@ Alle 22 controles slaagden. Er waren geen browserconsolefouten en zowel de oorsp
 ### Eigen beslissing
 
 Ik houd `Uitverkocht` en `Tijdelijk niet beschikbaar` als aparte betekenissen. Bij uitverkocht is de voorraad nul; bij tijdelijk niet beschikbaar blijft de echte voorraad opgeslagen en zichtbaar.
+
+---
+
+## Interactie 48 - Stap 16 gestart: betere foutafhandeling
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met codecontrole
+**Onderwerp:** Onverwachte serverantwoorden en verlopen sessies netjes verwerken
+
+### Volledige prompt van de student
+
+> stap 16
+
+### Antwoord en advies van AI
+
+Codex controleerde dat stap 15 was gecommit en de repository schoon was. Stap 16 behandelt drie situaties uit de opdracht: een verlopen sessie, een onverwacht HTML-antwoord in plaats van JSON en een tijdelijke storing van de publieke voorraadpagina. Deel 16A voegt in `beheer.js` één herbruikbare functie toe die het content-type controleert en bij statuscode 401 terugstuurt naar de loginpagina.
+
+### Wat heb ik ermee gedaan?
+
+Ik typ eerst zelf de hulpfunctie in `public/beheer.js`, vervang daar de rechtstreekse `response.json()`-aanroepen en herstel het foutieve loginpad. Daarna laat ik Codex de foutgevallen in een browser simuleren.
+
+### Controle
+
+Deel 16A wordt getest met een gesimuleerd HTML-foutantwoord en een verlopen sessie. De gebruiker moet een begrijpelijke melding krijgen of naar `/inloggen.html` worden gestuurd; een technische JSON-parsefout mag niet zichtbaar worden.
+
+### Eigen beslissing
+
+Ik gebruik één centrale functie voor API-antwoorden, zodat dezelfde foutafhandeling niet op veel plaatsen verschillend wordt gekopieerd. De server blijft verantwoordelijk voor JSON; de browser controleert defensief of dat antwoord werkelijk JSON is.
+
+---
+
+## Interactie 49 - Deel 16A geverifieerd en deel 16B gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met foutsimulaties in een echte browser
+**Onderwerp:** Veilige beheerfouten en publieke netwerkstoring
+
+### Volledige prompt van de student
+
+> 16A klaar
+
+### Antwoord en advies van AI
+
+Codex testte normale beschikbaarheidswijzigingen, een gesimuleerd HTML-antwoord met status 500 en een sessie die tijdens het gebruik werd beëindigd. Normale wijzigingen bleven werken en werden teruggezet. Het HTML-antwoord gaf de begrijpelijke melding `De server gaf een onverwacht antwoord. Probeer het opnieuw.` zonder `Unexpected token`. Bij de verlopen sessie werd de gebruiker naar `/inloggen.html` gestuurd. Alle 10 controles slaagden.
+
+Voor deel 16B adviseerde Codex dat het e-inkscherm bij een korte netwerkstoring de laatst geladen voorraad blijft tonen. Een compacte tekst waarschuwt dat de verbinding ontbreekt. Alleen wanneer er bij de eerste keer laden nog helemaal geen producten zijn, wordt de volledige tijdelijke storingsmelding getoond.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg zelf een toegankelijk verbindingsbericht toe aan `public/index.html`, verwerk succes en fouten in `public/app.js` en voeg compacte zwart-witopmaak toe aan `public/style.css`.
+
+### Controle
+
+Deel 16A gaf `10/10 controles geslaagd`. Deel 16B wordt getest met een mislukte eerste aanvraag en met een storing na een succesvolle aanvraag. Bij de tweede situatie moeten de bestaande productkaarten blijven staan en mag de pagina niet gaan scrollen.
+
+### Eigen beslissing
+
+Bij een korte storing is een iets oudere voorraadweergave bruikbaarder dan een volledig leeg scherm, zolang duidelijk wordt vermeld dat de verbinding ontbreekt. Bij de eerste laadpoging bestaat nog geen betrouwbare laatst bekende voorraad en wordt daarom een volledige storingstekst getoond.
+
+---
+
+## Interactie 50 - Deel 16B gecontroleerd
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met gesimuleerde netwerkstoringen in een browser
+**Onderwerp:** Laatste voorraad behouden, herstellen en teksten controleren
+
+### Volledige prompt van de student
+
+> ik denk dat 16b klaar is mr check t zelf nog ff
+
+### Antwoord en advies van AI
+
+Codex simuleerde een storing na een succesvolle laadpoging en een storing bij de eerste laadpoging. De API bevat inmiddels zes producten; een eerdere test verwachtte ten onrechte nog vijf. Alle zes kaarten bleven bij een latere storing staan en kwamen na herstel van een eerste storing terug. De verbindingsmelding verdween na herstel. Met de storingsmelding bleef de pagina op 800x600, 600x800, 1200x825 en 1280x720 zonder scroll of afgekapte kaarten.
+
+In de zichtbare teksten stonden nog twee typefouten: `voorraaad` en `Geeen`. Daarom is de techniek correct, maar wordt deel 16B pas afgerond nadat deze woorden zijn hersteld.
+
+### Wat heb ik ermee gedaan?
+
+Ik vervang zelf `voorraaad` door `voorraad` en `Geeen` door `Geen` in `public/app.js`. Daarna laat ik dezelfde fouttests opnieuw uitvoeren.
+
+### Controle
+
+De dynamische controle bevestigde zes producten vóór de storing, zes tijdens de latere storing en zes na herstel. Beide storingssituaties toonden de bedoelde soort melding; alleen de spelling week af.
+
+### Eigen beslissing
+
+Automatische tests moeten het actuele aantal producten uit de API gebruiken en geen oud vast aantal aannemen. Ook gebruikersmeldingen worden exact gecontroleerd, omdat duidelijke foutcommunicatie onderdeel is van de kwaliteit.
+
+---
+
+## Interactie 51 - Stap 16 definitief geverifieerd
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met gecombineerde fout- en herstelsimulaties
+**Onderwerp:** Volledige foutafhandeling van beheer en e-inkscherm
+
+### Volledige prompt van de student
+
+> klaar
+
+### Antwoord en advies van AI
+
+Codex voerde een verse gecombineerde test uit van heel stap 16. Normale beheerwijzigingen werkten en werden teruggezet. Een gesimuleerd HTML-antwoord werd vertaald naar een begrijpelijke melding zonder JSON-parsefout. Een verlopen sessie stuurde de medewerker terug naar de loginpagina. De publieke pagina laadde het actuele aantal producten, behield kaarten bij een latere storing, toonde correcte storingsteksten en herstelde automatisch zodra de API weer bereikbaar was.
+
+De latere storingssituatie is opnieuw gecontroleerd op 800x600, 600x800, 1200x825 en 1280x720. Alle kaarten en de waarschuwing pasten zonder scroll of afkapping.
+
+### Wat heb ik ermee gedaan?
+
+Ik beschouw stap 16 als afgerond en commit de wijzigingen aan de beheer-JavaScript, publieke HTML, publieke JavaScript, publieke CSS en het AI-logboek.
+
+### Controle
+
+De definitieve test gaf `24/24 controles geslaagd`. De normale werking, alle gesimuleerde foutgevallen, herstelgedrag en responsive e-inkindeling slaagden.
+
+### Eigen beslissing
+
+Ik toon technische details alleen in de browserconsole en geef gebruikers korte begrijpelijke meldingen. Bij tijdelijke uitval blijft laatst geladen informatie zichtbaar, maar wordt duidelijk gewaarschuwd dat deze mogelijk niet actueel is.
