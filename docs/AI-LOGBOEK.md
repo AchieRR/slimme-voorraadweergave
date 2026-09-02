@@ -2022,3 +2022,41 @@ Codex voerde een nieuwe onafhankelijke controle uit. `npm audit --omit=dev` meld
 ### Eigen beslissing
 
 Ik kies voor een kleine, compatibele beveiligingsupdate van het lockbestand. Ik vermijd `npm audit fix --force`, omdat dat ook grotere versiewijzigingen kan uitvoeren en daardoor nieuw gedrag kan veroorzaken.
+
+---
+
+## Interactie 71 - Definitieve oplevercontrole uitgevoerd
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Package-scripts verbeteren en project technisch eindcontroleren
+
+### Volledige prompt van de student
+
+> PS C:\Users\ahmad\Documents\ChatGPT\voorraad> npm run check
+>
+> > voorraad@1.0.0 check
+> > node --check server.js && node --check database.js && node --check wachtwoorden.js && node --check public/app.js && node --check public/inloggen.js && node --check public/beheer.js
+>
+> PS C:\Users\ahmad\Documents\ChatGPT\voorraad> npm start
+>
+> > voorraad@1.0.0 start
+> > node --env-file=.env server.js
+>
+> Server gestart op http://localhost:3000
+
+### Antwoord en advies van AI
+
+Codex controleerde onafhankelijk dat `package.json` nu naar `server.js` verwijst en geldige scripts voor `npm start` en `npm run check` bevat. Daarna werden de syntaxcontrole, dependency-audit, draaiende server, publieke pagina, producten-API en sessiebeveiliging opnieuw getest.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de verkeerde verwijzing naar het niet-bestaande `index.js` vervangen door `server.js`. Ook heb ik een duidelijk startcommando en een syntaxcontrole voor alle JavaScript-bestanden toegevoegd.
+
+### Controle
+
+`npm run check` slaagde zonder syntaxfouten en `npm audit --omit=dev` meldde 0 kwetsbaarheden. De publieke pagina gaf HTTP 200, de producten-API gaf HTTP 200 met zes producten en `/api/sessie` gaf zonder login correct HTTP 401. Git meldde alleen de verwachte wijziging aan `package.json` voordat het logboek werd bijgewerkt.
+
+### Eigen beslissing
+
+Ik gebruik geen misleidend automatisch testcommando voor het volledige systeem. `npm run check` controleert alleen de JavaScript-syntax; de 20 functionele tests en hun resultaten blijven apart en controleerbaar vastgelegd in `docs/Testplan.md`.
