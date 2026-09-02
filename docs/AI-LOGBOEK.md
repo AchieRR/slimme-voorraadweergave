@@ -1929,3 +1929,59 @@ Na het aanpassen wordt de README gecontroleerd door de beschreven stappen vanaf 
 ### Eigen beslissing
 
 Ik vermeld de Node.js-versie waarmee het project werkelijk is gecontroleerd. Ik documenteer geen `npm test`-commando zolang er geen blijvende geautomatiseerde testsuite in de repository staat.
+
+---
+
+## Interactie 68 - README gecontroleerd en schone-installatietest voorbereid
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Installatiehandleiding verifiëren en lokale toolbestanden negeren
+
+### Volledige prompt van de student
+
+> 20a is klaar
+
+### Antwoord en advies van AI
+
+Codex controleerde het repository-adres, de drie omgevingsvariabelen, Node.js-versie 24.16.0, installatiecommando's, startcommando en vier documentatielinks. Alles kwam overeen met de repository en lokale omgeving. Voor stap 20B adviseerde Codex om lokale bestanden van AI-ontwikkeltools aan `.gitignore` toe te voegen voordat een schone installatie wordt getest.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg `.claude-flow/` en `.codex-debug/` aan `.gitignore` toe. Daarna laat ik Codex het project in een tijdelijke map installeren, configureren en starten zonder mijn bestaande database of geheimen te wijzigen.
+
+### Controle
+
+De schone installatie moet bevestigen dat `npm install` werkt, de database automatisch wordt aangemaakt, twee medewerkersaccounts ontstaan, de publieke API antwoordt en inloggen werkt.
+
+### Eigen beslissing
+
+Lokale toolstatus hoort niet bij de schoolsoftware en wordt daarom niet gecommit. De tijdelijke installatietest gebruikt nieuwe testgeheimen en raakt de echte `.env` en database niet aan.
+
+---
+
+## Interactie 69 - Schone installatie succesvol getest
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met een tijdelijke lokale installatie
+**Onderwerp:** README-installatiestappen en nieuwe database verifiëren
+
+### Volledige prompt van de student
+
+> 20 b klar
+
+### Antwoord en advies van AI
+
+Codex controleerde eerst dat `.claude-flow/` en `.codex-debug/` door Git werden genegeerd. Daarna werd de gewone server tijdelijk gestopt en werd in de map `tmp` een lokale kopie van de repository gemaakt. In deze kopie voerde Codex `npm install` uit, maakte een tijdelijke `.env` met testgegevens en startte de applicatie met een volledig nieuwe database.
+
+### Wat heb ik ermee gedaan?
+
+Ik liet de installatiehandleiding testen alsof een andere ontwikkelaar het project voor het eerst installeert. De test controleerde de publieke pagina, de drie standaardproducten, beveiliging zonder sessie, de redirect van de beheerpagina, inloggen met medewerker1, inloggen met medewerker2 en het automatisch aanmaken van de database.
+
+### Controle
+
+Alle 7 controles slaagden. De tijdelijke testserver werd gestopt en mijn gewone server werd daarna opnieuw gestart. `npm audit` meldde wel één middelmatige waarschuwing voor de indirecte dependency `qs` 6.15.3 in `package-lock.json`. Deze waarschuwing wordt in de volgende stap onderzocht en opgelost.
+
+### Eigen beslissing
+
+Ik laat geen automatische `npm audit fix` uitvoeren zonder eerst te bekijken welke packages daardoor veranderen. Zo voorkom ik dat een beveiligingsupdate onverwacht de applicatie kapotmaakt.
