@@ -1475,3 +1475,91 @@ De definitieve test gaf `24/24 controles geslaagd`. De normale werking, alle ges
 ### Eigen beslissing
 
 Ik toon technische details alleen in de browserconsole en geef gebruikers korte begrijpelijke meldingen. Bij tijdelijke uitval blijft laatst geladen informatie zichtbaar, maar wordt duidelijk gewaarschuwd dat deze mogelijk niet actueel is.
+
+---
+
+## Interactie 52 - Stap 17 gestart: testplan en testresultaten
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met test-gap-controle
+**Onderwerp:** Minimaal vijftien controleerbare testgevallen ontwerpen
+
+### Volledige prompt van de student
+
+> stap 17
+
+### Antwoord en advies van AI
+
+Codex controleerde de repository en vond nog geen testmap, geautomatiseerde testbestanden of coveragegegevens. Het bestaande `npm test`-commando bevatte alleen de standaardmelding dat nog geen tests zijn ingesteld. Daarom wordt stap 17 verdeeld in een testplan met twintig gevallen, geautomatiseerde API-tests en handmatige of browsergestuurde UI- en e-inktests.
+
+De voorgestelde testgevallen dekken publieke gegevens, voorraadstatussen, automatisch vernieuwen, e-inkafmetingen, mobiele bediening, authenticatie, autorisatie, invoervalidatie, product toevoegen, beschikbaarheid, foutafhandeling en blijvende databaseopslag.
+
+### Wat heb ik ermee gedaan?
+
+Ik maak zelf eerst `docs/TESTPLAN.md` en typ daarin de twintig testgevallen met het verwachte resultaat. De werkelijke resultaten blijven voorlopig op `Nog uitvoeren` staan. Daarna automatiseer en voer ik de tests in kleinere delen uit.
+
+### Controle
+
+De test-gap-controle gaf `No coverage data found`. Het nieuwe testplan wordt gecontroleerd op minimaal vijftien unieke tests en op dekking van de functionele, beveiligings-, fout- en e-inkeisen uit de opdracht.
+
+### Eigen beslissing
+
+Ik kies twintig tests in plaats van precies het minimum van vijftien. Zo toont het verslag niet alleen normale werking, maar ook belangrijke foutgevallen en beveiliging.
+
+---
+
+## Interactie 53 - Alle twintig testgevallen uitgevoerd
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met API-controles en geautomatiseerde browsertests
+**Onderwerp:** Testplan uitvoeren en resultaten controleren
+
+### Volledige prompt van de student
+
+> 17a klaar we hebben test plan en test cases kan jij die doen
+
+### Antwoord en advies van AI
+
+Codex voerde alle twintig testgevallen uit zonder de broncode aan te passen. De API-, login-, sessie-, autorisatie- en invoercontroles gaven 11 van de 11 geslaagde resultaten. De database bleef na een echte serverherstart gelijk. Daarna slaagden 8 van de 8 browsertests voor de publieke pagina, productstatussen, de automatische verversing van 60 seconden, 800x600, 600x800, mobiel beheer en netwerkuitval met herstel.
+
+Tijdelijke wijzigingen aan voorraad en beschikbaarheid zijn na elke controle teruggezet. Het tijdelijke product voor de dubbele-naamtest is na afloop uit de database verwijderd. Het tijdelijke browsertestbestand en de testresultatenmap zijn eveneens verwijderd.
+
+### Wat heb ik ermee gedaan?
+
+Ik gebruik de gemeten resultaten om in het testplan bij T01 tot en met T20 het werkelijke resultaat en de status `Geslaagd` in te vullen. Het bestand `docs/Testplan.md` moet eerst in VS Code worden opgeslagen, omdat de versie op de schijf tijdens de controle nog leeg was.
+
+### Controle
+
+Alle twintig testgevallen zijn geslaagd. Na afloop is opnieuw gecontroleerd dat de oorspronkelijke zes producten met hun voorraad en beschikbaarheidsstatus zijn hersteld.
+
+### Eigen beslissing
+
+Ik laat testgegevens niet achter in de echte database. Daardoor bewijzen de tests de werking zonder de voorraad van het project blijvend te veranderen.
+
+---
+
+## Interactie 54 - Testplan ingevuld met gemeten resultaten
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Werkelijke testresultaten vastleggen
+
+### Volledige prompt van de student
+
+> vul testplan in
+
+### Antwoord en advies van AI
+
+Codex vulde in `docs/Testplan.md` bij T01 tot en met T20 het werkelijke resultaat en de status `Geslaagd` in. Ook zijn de testdatum, het totaalaantal van twintig geslaagde tests, nul mislukte tests en een korte eindconclusie toegevoegd.
+
+### Wat heb ik ermee gedaan?
+
+Ik neem de resultaten op in mijn projectdocumentatie zodat zichtbaar is wat is getest, wat er werkelijk gebeurde en of dat overeenkwam met het verwachte resultaat.
+
+### Controle
+
+Het testplan is gecontroleerd op twintig unieke testnummers, twintig ingevulde werkelijke resultaten, twintig statussen `Geslaagd`, nul resterende statussen `Nog uitvoeren` in de tabel en een volledig ingevulde samenvatting.
+
+### Eigen beslissing
+
+Ik beschrijf de resultaten kort en meetbaar met onder andere statuscodes, aantallen en schermformaten. Daardoor kan een docent de uitgevoerde controles gemakkelijker beoordelen.
