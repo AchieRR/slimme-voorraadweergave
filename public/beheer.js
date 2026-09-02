@@ -22,6 +22,12 @@ function maakProductElement(product) {
     const productElement = document.createElement("article");
     productElement.classList.add("product");
 
+    const isBeschikbaar = product.beschikbaar === 1;
+
+    if (!isBeschikbaar) {
+        productElement.classList.add("niet-beschikbaar");
+    }
+
     const naamElement = document.createElement("h2");
     naamElement.textContent = product.naam;
 
@@ -35,6 +41,17 @@ function maakProductElement(product) {
         "voorraad: ",
         voorraadGetal,
     );
+
+    const statusElement = document.createElement("p");
+    statusElement.classList.add("productstatus");
+
+    statusElement.textContent = isBeschikbaar
+        ? "Status: beschikbaar"
+        : "Status: tijdelijk niet beschikbaar";
+
+
+
+
 
     const knoppenElement = document.createElement("div");
     knoppenElement.classList.add("knoppen");
@@ -60,11 +77,16 @@ function maakProductElement(product) {
     const instelFormulier =
         maakiInstelFormulier(product);
 
+    const beschikbaarheidsknop =
+        maakBeschikbaarheidsKnop(product);
+
     productElement.append(
         naamElement,
         voorraadElement,
         knoppenElement,
-        instelFormulier
+        instelFormulier,
+        beschikbaarheidsknop,
+        statusElement
     );
 
     return productElement;
@@ -81,6 +103,31 @@ function maakVoorraadKnop(tekst, product, verschil) {
         knop.disabled = true;
 
         await wijzigVoorraad(product.id, verschil);
+
+        knop.disabled = false;
+    });
+
+    return knop;
+}
+
+function maakBeschikbaarheidsKnop(product) {
+    const knop = document.createElement("button");
+    const isBeschikbaar = product.beschikbaar === 1;
+
+    knop.type = "button";
+    knop.classList.add("beschikbaarheidsknop");
+
+    knop.textContent = isBeschikbaar
+        ? "Tijdelijk niet beschikbaar maken"
+        : "Weer beschikbaar maken";
+
+    knop.addEventListener("click", async () => {
+        knop.disabled = true;
+
+        await stelBeschikbaarheid(
+            product.id,
+            !isBeschikbaar
+        );
 
         knop.disabled = false;
     });
@@ -227,6 +274,55 @@ async function stelVoorraadin(productId, voorraad) {
         await laadProducten();
     } catch (error) {
         console.error("Voorraad instellen mislukt:", error);
+
+        meldingElement.textContent = error.message;
+    }
+}
+
+async function stelBeschikbaarheid(
+    productId,
+    beschikbaar
+) {
+    meldingElement.textContent =
+        "Beschikbaarheid aanpassen...";
+
+    try {
+        const response = await fetch(
+            `/api/producten/${productId}/beschikbaarheid`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    beschikbaar: beschikbaar
+                })
+            }
+        );
+
+        const resultaat = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                resultaat.fout ||
+                "De beschikbaarheid kon niet worden aangepast."
+            );
+        }
+
+        const statusTekst =
+            resultaat.beschikbaar === 1
+                ? "beschikbaar"
+                : "tijdelijk niet beschikbaar";
+
+        meldingElement.textContent =
+            `${resultaat.naam} is nu ${statusTekst}.`;
+
+        await laadProducten();
+    } catch (error) {
+        console.error(
+            "Beschikbaarheid aanpassen mislukt:",
+            error
+        );
 
         meldingElement.textContent = error.message;
     }

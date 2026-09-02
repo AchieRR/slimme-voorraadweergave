@@ -346,6 +346,60 @@ app.put("/api/producten/:id/voorraad", vereisLogin, (request, response) => {
     }
 });
 
+app.put(
+    "/api/producten/:id/beschikbaarheid",
+    vereisLogin,
+    (request, response) => {
+        try {
+            const productId = Number(request.params.id);
+            const beschikbaar = request.body?.beschikbaar;
+
+            if (
+                !Number.isInteger(productId) ||
+                productId < 1
+            ) {
+                return response.status(400).json({
+                    fout: "Het productnummer is ongeldig."
+                });
+            }
+
+            if (typeof beschikbaar !== "boolean") {
+                return response.status(400).json({
+                    fout: "Beschikbaarheid moet true of false zijn."
+                });
+            }
+
+            const product = database.prepare(`
+                UPDATE producten
+                SET beschikbaar = ?
+                WHERE id = ?
+                RETURNING id, naam, voorraad, beschikbaar
+            `).get(
+                beschikbaar ? 1 : 0,
+                productId
+            );
+
+            if (!product) {
+                return response.status(404).json({
+                    fout: "Product niet gevonden."
+                });
+            }
+
+            return response.json(product);
+        } catch (error) {
+            console.error(
+                "Beschikbaarheid wijzigen mislukt:",
+                error
+            );
+
+            return response.status(500).json({
+                fout: "De beschikbaarheid kon niet worden gewijzig."
+            });
+        }
+    }
+);
+
+
 app.listen(poort, () => {
     console.log(`Server gestart op http://localhost:${poort}`);
 });

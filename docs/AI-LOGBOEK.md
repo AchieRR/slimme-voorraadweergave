@@ -1183,3 +1183,177 @@ Na de correctie moeten de producten terugkomen, mag de tijdelijke foutmelding ni
 ### Eigen beslissing
 
 Ik controleer bij een algemene gebruikersmelding ook de browserconsole. De gebruiksvriendelijke tekst verbergt bewust technische details, maar de console toont welke JavaScript-regel werkelijk misging.
+
+---
+
+## Interactie 42 - Stap 14 afgerond en stap 15 gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met geautomatiseerde responsive browsertests
+**Onderwerp:** E-inkcontrole en tijdelijke productbeschikbaarheid
+
+### Volledige prompt van de student
+
+> we gaan door naar stap 15
+
+### Antwoord en advies van AI
+
+Codex verifieerde eerst stap 14 op 800x600, 600x800, 1200x825 en 1280x720. Op alle vier resoluties werden vijf producten getoond, bleven alle kaarten binnen het scherm, was er geen horizontale of verticale scroll en bleef de browserconsole leeg. Stap 14 is daarom afgerond. Stap 15 wordt het tijdelijk beschikbaar of niet beschikbaar maken van een product.
+
+De database bevat al de kolom `beschikbaar` en de publieke GET-route stuurt deze waarde al mee. Daarom is geen databasewijziging nodig. Stap 15 wordt opgesplitst in een beveiligde API-route, een knop in de beheerpagina en de juiste status op de publieke e-inkpagina.
+
+### Wat heb ik ermee gedaan?
+
+Ik typ eerst zelf deel 15A: een beveiligde PUT-route waarmee `beschikbaar` alleen op `true` of `false` kan worden ingesteld. Pas nadat deze route is getest ga ik verder met de knop en publieke weergave.
+
+### Controle
+
+Stap 14 gaf `4/4 resoluties geslaagd`. Voor deel 15A wordt gecontroleerd dat een ingelogde medewerker de status kan wijzigen, een niet-ingelogde aanvraag 401 krijgt, een ongeldige waarde 400 krijgt en een onbekend product 404 krijgt.
+
+### Eigen beslissing
+
+Ik gebruik een aparte route voor beschikbaarheid in plaats van de voorraad op nul te zetten. Zo blijft de echte voorraad bewaard wanneer een product slechts tijdelijk niet verkocht mag worden.
+
+---
+
+## Interactie 43 - Deel 15A gaf 404 door route-typefout
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met geautomatiseerde API-tests en procescontrole
+**Onderwerp:** Nieuwe beschikbaarheidsroute niet gevonden
+
+### Volledige prompt van de student
+
+> 15A klaar
+
+### Antwoord en advies van AI
+
+Codex controleerde de nieuwe route voordat stap 15 werd vervolgd. De server draaide met het recent gewijzigde bestand en inloggen werkte, maar aanvragen naar de bedoelde beschikbaarheidsroute gaven statuscode 404. In `server.js` stond `/api/producnten/:id/beschikbaarheid`; in `producten` was per ongeluk een extra `n` getypt. Daardoor had Express alleen de verkeerd gespelde route geregistreerd.
+
+### Wat heb ik ermee gedaan?
+
+Ik vervang zelf op regel 350 `producnten` door `producten`. Daarnaast herstel ik de twee tekstfouten in de algemene foutmelding en herstart ik de server.
+
+### Controle
+
+Na de herstart voert Codex opnieuw de zes API-controles uit. De verwachte statussen zijn 401 zonder login, 200 voor inloggen, 400 bij een ongeldige waarde, 404 bij een onbekend product en 200 bij wijzigen en terugzetten.
+
+### Eigen beslissing
+
+Een statuscode 404 bij een nieuwe route betekent niet automatisch dat de server oud is. Ik vergelijk ook altijd de exacte URL in de aanvraag met de route die werkelijk in `server.js` staat.
+
+---
+
+## Interactie 44 - Deel 15A geverifieerd en deel 15B gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met geautomatiseerde API-tests
+**Onderwerp:** Beschikbaarheidsroute testen en beheerknop voorbereiden
+
+### Volledige prompt van de student
+
+> opnieuw klaar
+
+### Antwoord en advies van AI
+
+Codex herhaalde de volledige API-controle na het herstellen van de route. Zeven controles slaagden: producten ophalen gaf 200, een aanvraag zonder login gaf 401, inloggen gaf 200, een ongeldige beschikbaarheidswaarde gaf 400, een onbekend product gaf 404, een geldige statuswijziging gaf 200 en de oorspronkelijke teststatus werd met 200 teruggezet. Deel 15A is daarmee afgerond.
+
+Voor deel 15B adviseerde Codex een duidelijke statusregel en actieknop per product op de mobiele beheerpagina. De knop gebruikt tekst in plaats van alleen kleur, zodat altijd duidelijk is wat de actie doet.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg zelf in `public/beheer.js` de zichtbare status, de beschikbaarheidsknop en de fetch-functie toe. In `public/beheer.css` voeg ik de bijbehorende mobiele knop- en statusopmaak toe.
+
+### Controle
+
+De API-test gaf `7/7 controles geslaagd`. Na deel 15B wordt via een echte browser gecontroleerd dat de knop de databasewaarde wijzigt, de tekst omschakelt, de voorraad behouden blijft en uitloggen nog werkt.
+
+### Eigen beslissing
+
+Ik toon zowel de huidige status als een knoptekst die de volgende actie beschrijft. Hierdoor hoeft een medewerker niet uit alleen een kleur af te leiden of een product beschikbaar is.
+
+---
+
+## Interactie 45 - Beschikbaarheidsknop ontving HTML in plaats van JSON
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met een geautomatiseerde browsertest en netwerkanalyse
+**Onderwerp:** Verkeerde HTTP-methode in de beheerpagina
+
+### Volledige prompt van de student
+
+> Unexpected token '<', "<!DOCTYPE "... is not valid JSON als ik t onbeschikbaar wil maken dan krijg ik dat
+
+### Antwoord en advies van AI
+
+Codex reproduceerde de fout door na een geldige login op de beschikbaarheidsknop te klikken. De browser verstuurde `PATCH /api/producten/5/beschikbaarheid` en ontving statuscode 404 met een HTML-foutpagina. Vervolgens probeerde `response.json()` deze HTML als JSON te lezen, waardoor `Unexpected token '<'` ontstond. De serverroute accepteert `PUT`; in `public/beheer.js` stond op regel 293 per ongeluk `method: "PATCH"`.
+
+### Wat heb ik ermee gedaan?
+
+Ik vervang zelf bij de beschikbaarheidsaanvraag alleen `PATCH` door `PUT`, sla het bestand op en vernieuw de beheerpagina met `Ctrl + F5`.
+
+### Controle
+
+Na de correctie moet de aanvraag statuscode 200 en JSON teruggeven. De productstatus moet veranderen, de voorraad moet gelijk blijven en een tweede klik moet het product weer beschikbaar maken.
+
+### Eigen beslissing
+
+De URL en het JSON-body kunnen correct zijn terwijl een API-aanvraag toch niet bestaat. De combinatie van HTTP-methode en URL bepaalt samen welke Express-route wordt gebruikt.
+
+---
+
+## Interactie 46 - Deel 15B geverifieerd en deel 15C gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met een mobiele end-to-end browsertest
+**Onderwerp:** Beschikbaarheidsknop testen en publieke status voorbereiden
+
+### Volledige prompt van de student
+
+> oke opnieuw klaar
+
+### Antwoord en advies van AI
+
+Codex logde via een echte browsersessie in en schakelde één product via de zichtbare beheerknop om. Daarna werd hetzelfde product via de opnieuw opgebouwde knop teruggeschakeld. Beide PUT-aanvragen gaven statuscode 200. De databasewaarde, zichtbare statustekst en knoptekst veranderden correct, terwijl de voorraad gelijk bleef. Na de tweede klik was de oorspronkelijke status hersteld. De definitieve test gaf 10 van 10 geslaagde controles zonder consolefouten.
+
+### Wat heb ik ermee gedaan?
+
+Deel 15B is afgerond. Ik ga nu zelf deel 15C typen in `public/app.js` en `public/style.css`, zodat het publieke e-inkscherm onderscheid maakt tussen beschikbaar, uitverkocht en tijdelijk niet beschikbaar.
+
+### Controle
+
+De test controleerde API-login, beide PUT-aanvragen, beide databasewijzigingen, voorraadbehoud, zichtbare status, knoptekst, het terugzetten van de beginstatus en de browserconsole. Alle 10 controles slaagden.
+
+### Eigen beslissing
+
+De publieke pagina krijgt geen bedieningsknoppen. Een gast ziet de status met duidelijke tekst en hoog zwart-witcontrast; alleen een ingelogde medewerker kan de status wijzigen.
+
+---
+
+## Interactie 47 - Stap 15 volledig geverifieerd
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met API- en end-to-end browsertests
+**Onderwerp:** Alle beschikbaarheidsstatussen en e-inkindeling controleren
+
+### Volledige prompt van de student
+
+> 15c is klaar
+
+### Antwoord en advies van AI
+
+Codex testte de drie mogelijke publieke situaties met echte tijdelijke databasewijzigingen: een product met voorraad en beschikbaarheid toont `Beschikbaar`, een beschikbaar product met voorraad nul toont `Uitverkocht` en een product met voorraad dat handmatig is uitgeschakeld toont `Tijdelijk niet beschikbaar`. Niet-beschikbare kaarten kregen het hoge zwart-witcontrast en bevatten op de publieke pagina geen bedieningsknoppen.
+
+Daarnaast werd de langste statustekst getest op 800x600, 600x800, 1200x825 en 1280x720. Op alle resoluties bleven alle kaarten volledig zichtbaar zonder horizontale of verticale scroll. Na afloop zijn de oorspronkelijke voorraad en beschikbaarheidsstatus teruggezet.
+
+### Wat heb ik ermee gedaan?
+
+Ik beschouw stap 15 als afgerond en commit de wijzigingen aan server, beheerinterface, publieke interface en AI-logboek samen als één werkende functie.
+
+### Controle
+
+Alle 22 controles slaagden. Er waren geen browserconsolefouten en zowel de oorspronkelijke voorraad als de oorspronkelijke beschikbaarheid zijn na de test hersteld.
+
+### Eigen beslissing
+
+Ik houd `Uitverkocht` en `Tijdelijk niet beschikbaar` als aparte betekenissen. Bij uitverkocht is de voorraad nul; bij tijdelijk niet beschikbaar blijft de echte voorraad opgeslagen en zichtbaar.

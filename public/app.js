@@ -3,11 +3,17 @@ const productenContainer = document.querySelector("#producten");
 function maakProductElement(product) {
     const isUitverkocht = product.voorraad === 0;
 
+    const isTijdelijkNietBeschikbaar =
+        product.beschikbaar === 0;
+
+    const isNietBeschikbaar =
+        isUitverkocht || isTijdelijkNietBeschikbaar;
+
     const productElement = document.createElement("article");
     productElement.classList.add("product");
 
-    if (isUitverkocht) {
-        productElement.classList.add("uitverkocht");
+    if (isNietBeschikbaar) {
+        productElement.classList.add("niet-beschikbaar");
     }
 
     const informatieElement = document.createElement("div");
@@ -17,9 +23,14 @@ function maakProductElement(product) {
 
     const statusElement = document.createElement("p");
     statusElement.classList.add("status");
-    statusElement.textContent = isUitverkocht
-        ? "Uitverkocht"
-        : "Beschikbaar";
+    if (isTijdelijkNietBeschikbaar) {
+        statusElement.textContent =
+            "Tijdelijk niet beschikbaar";
+    } else if (isUitverkocht) {
+        statusElement.textContent = "Uitverkocht";
+    } else {
+        statusElement.textContent = "Beschikbaar";
+    }
 
     informatieElement.append(naamElement, statusElement);
 

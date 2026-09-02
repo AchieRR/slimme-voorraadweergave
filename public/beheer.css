@@ -209,3 +209,34 @@ h1 {
     font-weight: bold;
     cursor: pointer;
 }
+
+.productstatus {
+    margin: 12px 0;
+    font-weight: bold;
+}
+
+.product.niet-beschikbaar {
+    background-color: #dddddd;
+    border-style: dashed;
+}
+
+.beschikbaarheidsknop {
+    width: 100%;
+    min-height: 52px;
+    margin-top: 16px;
+    padding: 8px 14px;
+
+    border: 3px solid black;
+    border-radius: 8px;
+    background-color: black;
+    color: white;
+
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.beschikbaarheidsknop:disabled {
+    cursor: wait;
+    opacity: 0.5;
+}
