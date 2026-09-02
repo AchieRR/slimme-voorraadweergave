@@ -1985,3 +1985,40 @@ Alle 7 controles slaagden. De tijdelijke testserver werd gestopt en mijn gewone 
 ### Eigen beslissing
 
 Ik laat geen automatische `npm audit fix` uitvoeren zonder eerst te bekijken welke packages daardoor veranderen. Zo voorkom ik dat een beveiligingsupdate onverwacht de applicatie kapotmaakt.
+
+---
+
+## Interactie 70 - Npm-kwetsbaarheid opgelost
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Indirecte dependency `qs` veilig bijwerken en controleren
+
+### Volledige prompt van de student
+
+> PS C:\Users\ahmad\Documents\ChatGPT\voorraad> npm audit fix --package-lock-only
+> up to date, audited 77 packages in 697ms
+> found 0 vulnerabilities
+>
+> PS C:\Users\ahmad\Documents\ChatGPT\voorraad> npm install
+> removed 3 packages, and audited 77 packages in 517ms
+> found 0 vulnerabilities
+>
+> PS C:\Users\ahmad\Documents\ChatGPT\voorraad> npm audit --omit=dev
+> found 0 vulnerabilities
+
+### Antwoord en advies van AI
+
+Codex legde uit dat `node_modules` al `qs` 6.16.0 bevatte, maar dat `package-lock.json` nog versie 6.15.3 vastlegde. De student voerde daarom eerst `npm audit fix --package-lock-only` uit, synchroniseerde daarna de installatie met `npm install` en controleerde ten slotte de productiedependencies met `npm audit --omit=dev`.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de veilige indirecte dependency vastgelegd in `package-lock.json`, zodat een nieuwe installatie niet opnieuw de kwetsbare versie installeert. Ik heb geen `--force` gebruikt.
+
+### Controle
+
+Codex voerde een nieuwe onafhankelijke controle uit. `npm audit --omit=dev` meldde 0 kwetsbaarheden, zowel `npm ls qs` als `package-lock.json` toonden versie 6.16.0 en de opnieuw gestarte server werkte. De publieke pagina gaf HTTP 200, de API gaf 6 producten terug en `/api/sessie` gaf zonder login correct HTTP 401.
+
+### Eigen beslissing
+
+Ik kies voor een kleine, compatibele beveiligingsupdate van het lockbestand. Ik vermijd `npm audit fix --force`, omdat dat ook grotere versiewijzigingen kan uitvoeren en daardoor nieuw gedrag kan veroorzaken.
