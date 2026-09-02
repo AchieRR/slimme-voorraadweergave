@@ -2060,3 +2060,50 @@ Ik heb de verkeerde verwijzing naar het niet-bestaande `index.js` vervangen door
 ### Eigen beslissing
 
 Ik gebruik geen misleidend automatisch testcommando voor het volledige systeem. `npm run check` controleert alleen de JavaScript-syntax; de 20 functionele tests en hun resultaten blijven apart en controleerbaar vastgelegd in `docs/Testplan.md`.
+
+---
+
+## Interactie 72 - Product-ownerantwoorden en projectdocumentatie verbeterd
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met document- en PDF-controle
+**Onderwerp:** Interviewnotities beoordelen en één gecontroleerd Word-document maken
+
+### Volledige prompt van de student
+
+> Voor stap 21 wil ik eerst de antwoorden van de product owner verwerken. Mijn notities zijn:
+>
+> 1. Wat moet een gast zien bij voorraad nul of tijdelijk niet beschikbaar?
+> Antwoord: sommige helemaal niet tonen; bij sommige tijdelijk uitverkocht.
+>
+> 2. Welke productgegevens moet een medewerker kunnen beheren?
+> Antwoord: prijs erbij; naam, prijs en voorraad; per liter.
+>
+> 3. Moeten twee medewerkers ieder een eigen account hebben en moet zichtbaar zijn wie een wijziging deed?
+> Antwoord: ja, prima.
+>
+> 4. Hoe snel moet een wijziging zichtbaar zijn?
+> Antwoord: 30 seconden.
+>
+> 5. Hoe moet een foutieve voorraadwijziging worden hersteld?
+> Antwoord: gewoon weer bijpassen.
+>
+> Ik weet niet zeker of dit de precieze antwoorden zijn. Controleer de opdracht en documentatie. Mijn projectgenoot maakte ook een concept met probleemanalyse, architectuur, MySQL, HTML/CSS/JS, Flutter, GitHub, datamodel, security, testplan en AI-verantwoording. Controleer of alles klopt, voeg ontbrekende informatie toe en maak een bestand dat ik kan openen met de verbeterde documentatie.
+
+### Antwoord en advies van AI
+
+Codex vergeleek de oorspronkelijke PDF-opdracht, de bestaande functionele en technische ontwerpen, het testplan, de broncode en de interviewnotities. Het concept van de projectgenoot bevatte een bruikbare indeling, maar MySQL en Flutter kwamen niet overeen met de gebouwde applicatie. Het project gebruikt SQLite en een responsive mobiele webpagina. Registreren en verwijderen zijn niet verplicht in de eerste versie.
+
+De antwoorden over 30 seconden en het opnieuw instellen van de juiste voorraad waren duidelijk genoeg. De antwoorden over prijs, het verbergen van producten en wijzigingshistorie kwamen uit vragen met meerdere deelvragen en werden daarom niet zonder bevestiging als definitieve eisen behandeld.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb het bestand `docs/PROJECTDOCUMENTATIE-VERBETERD.docx` laten maken. Het document bevat probleemanalyse, eisen, product-owneranalyse, functioneel ontwerp, architectuur, technologiekeuzes, datamodel, API, security, foutafhandeling, e-inkonderzoek, testresultaten, AI-verantwoording, verschillenanalyse, vervolgwerk, alle 20 testgevallen en bronnen.
+
+### Controle
+
+Het Word-document is structureel gecontroleerd op koppen, paginageometrie, tabelbreedtes, placeholders en toegankelijkheid. Daarna is het met Microsoft Word naar PDF omgezet en zijn alle 14 pagina's als afbeeldingen bekeken. Tijdens deze controle zijn doorlopende lijstnummering, onnodige lege pagina's, gesplitste tabelrijen en ontbrekende kopteksten op even pagina's gevonden en hersteld. De laatste toegankelijkheidscontrole gaf 0 bevindingen en alle tabellen hadden passende vaste breedtes.
+
+### Eigen beslissing
+
+Ik presenteer onduidelijke interviewnotities niet als zekere requirements. Eerst laat ik de product owner vier korte punten bevestigen: de regel voor verbergen of status tonen, het soort prijs en de eenheid, het wijzigen van naam en prijs, en de noodzaak van wijzigingshistorie. De aanpassing van 60 naar 30 seconden kan wel alvast als bevestigd vervolgwerk worden gepland.
