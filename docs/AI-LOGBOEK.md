@@ -1759,3 +1759,173 @@ De beschreven architectuur wordt na het opslaan vergeleken met de werkelijke bes
 ### Eigen beslissing
 
 Ik gebruik een eenvoudige architectuur met drie lagen: gebruikersinterfaces in de browser, een Express-backend en een SQLite-database. Dit is overzichtelijk genoeg om tijdens de presentatie zelf uit te leggen.
+
+---
+
+## Interactie 62 - Architectuur gecontroleerd en technologiekeuzes gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Technisch ontwerp vergelijken met code en keuzes onderbouwen
+
+### Volledige prompt van de student
+
+> 19a klaar
+
+### Antwoord en advies van AI
+
+Codex vergeleek het architectuuroverzicht met de werkelijke projectbestanden. De drie lagen, de browserinterfaces, `server.js`, `database.js`, `wachtwoorden.js`, de SQLite-database en de belangrijkste gegevensstromen waren correct beschreven. Daarna adviseerde Codex om bij iedere technologie niet alleen het gebruik, maar ook de reden, het alternatief en een beperking te noemen.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg aan het technisch ontwerp de keuzes voor HTML, CSS, gewone JavaScript, Node.js, Express, SQLite, express-session, node:crypto en omgevingsvariabelen toe.
+
+### Controle
+
+Na het opslaan wordt gecontroleerd of alle beschreven technologieën werkelijk in de code of configuratie voorkomen en of de genoemde beperkingen eerlijk bij het prototype passen.
+
+### Eigen beslissing
+
+Ik kies eenvoudige technologieën die passen bij de omvang van het project en die ik zelf kan uitleggen. Ik vermeld ook wanneer een andere oplossing geschikter zou zijn voor een grotere productieomgeving.
+
+---
+
+## Interactie 63 - Technologiekeuzes gecontroleerd en datamodel gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Technische keuzes verifiëren en SQLite-tabellen documenteren
+
+### Volledige prompt van de student
+
+> 19b klaar
+
+### Antwoord en advies van AI
+
+Codex controleerde dat alle tien technologieonderdelen waren beschreven en dat Express, express-session, SQLite en scrypt werkelijk in de dependencies en code voorkomen. De beperkingen van de lokale sessieopslag, SQLite en lokale hosting waren eerlijk vermeld. Daarna stelde Codex een datamodel voor dat exact aansluit op de tabellen `producten` en `medewerkers` uit `database.js`.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg tabellen met veldnamen, datatypes, regels en uitleg toe aan het technisch ontwerp. Ook beschrijf ik dat de tabellen nu geen directe relatie hebben en dat wijzigingsgeschiedenis een mogelijke latere uitbreiding is.
+
+### Controle
+
+Na het opslaan wordt ieder veld en iedere beperking vergeleken met de werkelijke `CREATE TABLE`-statements in `database.js`. Geheime wachtwoordgegevens worden niet in de documentatie opgenomen.
+
+### Eigen beslissing
+
+Ik documenteer het echte datamodel in plaats van het voorbeeldmodel uit de opdracht. Een prijsveld is niet nodig, omdat deze applicatie alleen voorraad en beschikbaarheid toont en geen betalingen verwerkt.
+
+---
+
+## Interactie 64 - Datamodel gecontroleerd en API-documentatie gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** SQLite-schema verifiëren en HTTP-routes beschrijven
+
+### Volledige prompt van de student
+
+> 19c klaar
+
+### Antwoord en advies van AI
+
+Codex vergeleek alle velden, datatypes en beperkingen in het technisch ontwerp met `database.js`. De tabellen `producten` en `medewerkers`, de acht velden, `STRICT`, de ontbrekende directe relatie en het negeren van het databasebestand door Git waren correct beschreven. Vervolgens vond Codex acht API-routes en één beveiligde HTML-route in `server.js`.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg een routeoverzicht, de verwachte JSON-invoer en uitleg van de belangrijkste HTTP-statuscodes toe aan het technisch ontwerp.
+
+### Controle
+
+Na het opslaan wordt gecontroleerd of iedere route uit `server.js` precies één keer in de documentatie staat, of de HTTP-methodes kloppen en of duidelijk is welke routes een ingelogde sessie vereisen.
+
+### Eigen beslissing
+
+Ik documenteer voorraad verhogen/verlagen met `PATCH` apart van voorraad exact instellen met `PUT`, omdat deze routes een verschillende bedoeling hebben.
+
+---
+
+## Interactie 65 - API-documentatie gecontroleerd en security gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Routes verifiëren en beveiligingsmaatregelen uitleggen
+
+### Volledige prompt van de student
+
+> 19d klaar
+
+### Antwoord en advies van AI
+
+Codex controleerde alle acht API-routes, HTTP-methodes, loginvereisten, JSON-velden en gebruikte statuscodes tegen `server.js`. De routebeschrijvingen en codeblokken waren compleet. Daarna stelde Codex een securityhoofdstuk voor over authenticatie, wachtwoordhashing, sessies, autorisatie, invoervalidatie en resterende risico's.
+
+### Wat heb ik ermee gedaan?
+
+Ik beschrijf zowel de aanwezige beveiliging als de beperkingen van het prototype. Daarbij maak ik duidelijk welke maatregelen nodig zijn voordat de applicatie in een echte productieomgeving wordt gebruikt.
+
+### Controle
+
+Na het opslaan wordt de securitytekst vergeleken met `server.js`, `database.js`, `wachtwoorden.js`, `.env.example` en `.gitignore`. Niet-geïmplementeerde verbeteringen worden duidelijk als toekomstig werk aangeduid.
+
+### Eigen beslissing
+
+Ik beweer niet dat het prototype volledig productieveilig is. Ik leg eerlijk uit dat onder andere HTTPS, login-rate-limiting, CSRF-bescherming en permanente sessieopslag later nodig zijn.
+
+---
+
+## Interactie 66 - Security gecontroleerd en e-inkonderzoek gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met officiële documentatie van E Ink en Waveshare
+**Onderwerp:** Beveiliging verifiëren, foutafhandeling en hardwarebeperkingen beschrijven
+
+### Volledige prompt van de student
+
+> 19e klaar
+
+### Antwoord en advies van AI
+
+Codex controleerde dat de securitybeschrijving overeenkwam met de code: scrypt, een uniek zout, `timingSafeEqual`, sessieregeneratie, cookie-instellingen, `vereisLogin`, invoervalidatie en geparametriseerde SQL waren aanwezig. De niet-geïmplementeerde productieverbeteringen waren duidelijk als toekomstig werk beschreven. Voor het e-inkonderzoek raadpleegde Codex officiële informatie van E Ink en Waveshare over bistabiliteit, stroomverbruik, reflectie, resolutie, refreshmodi en ghosting.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg aan het technisch ontwerp foutafhandeling en e-inkonderzoek toe. Ik vermeld dat een 9,7-inch Waveshare-scherm een voorbeeld is en niet automatisch hetzelfde model als het nog te leveren scherm.
+
+### Controle
+
+Na het opslaan wordt de foutafhandeling vergeleken met `server.js`, `public/app.js` en `public/beheer.js`. Hardwareafhankelijke conclusies blijven voorlopig open totdat merk, model, resolutie, controller en browserondersteuning bekend zijn.
+
+### Eigen beslissing
+
+Ik behoud de verversing van 60 seconden uit de opdracht, maar controleer na levering of het echte scherm deze frequentie ondersteunt zonder storende flitsen of ghosting. Als de fabrikant een ander interval voorschrijft, bespreek ik dit met de product owner.
+
+---
+
+## Interactie 67 - Technisch ontwerp afgerond en README gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Technisch ontwerp eindcontroleren en installatie documenteren
+
+### Volledige prompt van de student
+
+> 19f klaar
+>
+> werk door
+
+### Antwoord en advies van AI
+
+Codex controleerde alle tien hoofdstukken van het technisch ontwerp. De foutafhandeling kwam overeen met `server.js`, `public/beheer.js` en `public/app.js`. Het e-inkhoofdstuk bevatte officiële bronnen, vier geteste resoluties en een duidelijke vermelding dat het echte scherm nog onderzocht moet worden. Daarna startte Codex stap 20A om van de README een bruikbare installatie- en starthandleiding te maken.
+
+### Wat heb ik ermee gedaan?
+
+Ik commit eerst het technisch ontwerp en logboek. Daarna vervang ik de korte README door een overzicht met functies, benodigdheden, installatie, omgevingsvariabelen, starten en lokale adressen.
+
+### Controle
+
+Na het aanpassen wordt de README gecontroleerd door de beschreven stappen vanaf de projectmap uit te voeren. Er worden geen echte wachtwoorden of sessiegeheimen in de README geplaatst.
+
+### Eigen beslissing
+
+Ik vermeld de Node.js-versie waarmee het project werkelijk is gecontroleerd. Ik documenteer geen `npm test`-commando zolang er geen blijvende geautomatiseerde testsuite in de repository staat.
