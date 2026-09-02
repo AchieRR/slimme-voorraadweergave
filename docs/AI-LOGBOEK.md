@@ -1563,3 +1563,199 @@ Het testplan is gecontroleerd op twintig unieke testnummers, twintig ingevulde w
 ### Eigen beslissing
 
 Ik beschrijf de resultaten kort en meetbaar met onder andere statuscodes, aantallen en schermformaten. Daardoor kan een docent de uitgevoerde controles gemakkelijker beoordelen.
+
+---
+
+## Interactie 55 - Vervolgstappen na het testplan bepaald
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex met controle van de projectopdracht
+**Onderwerp:** Resterende documentatie, oplevercontrole en presentatie plannen
+
+### Volledige prompt van de student
+
+> wat zijn de volgende stappen
+
+### Antwoord en advies van AI
+
+Codex vergeleek de huidige repository met de eindproducten uit de projectopdracht. De werkende applicatie, database, authenticatie, het testplan, de testresultaten en het AI-logboek zijn aanwezig. De belangrijkste resterende onderdelen zijn de technische documentatie, een duidelijke installatiehandleiding, een laatste oplevercontrole en de presentatie met demonstratie.
+
+### Wat heb ik ermee gedaan?
+
+Ik werk eerst in kleine delen aan de technische documentatie: probleemanalyse en eisen, architectuur, technologiekeuzes, datamodel, security, e-inkonderzoek en AI-verantwoording. Daarna controleer ik de README en bereid ik de eindpresentatie voor.
+
+### Controle
+
+De lijst is gebaseerd op de onderdelen onder `Documentatie`, `Eindpresentatie` en `Eindproduct` in de projectopdracht. Bonusfuncties zijn niet nodig voordat de verplichte onderdelen compleet zijn.
+
+### Eigen beslissing
+
+Ik maak eerst alle verplichte opleveronderdelen af. Pas als daar tijd voor overblijft, kies ik eventueel een bonusopdracht.
+
+---
+
+## Interactie 56 - Stap 18A gestart: probleemanalyse en eisen
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Eerste deel van de technische documentatie schrijven
+
+### Volledige prompt van de student
+
+> oke laten we door gaan dan wat is de volgende stap
+
+### Antwoord en advies van AI
+
+Codex stelde voor om `docs/TECHNISCHE-DOCUMENTATIE.md` te maken en daarin eerst het probleem, het doel, de twee doelgroepen, de functionele eisen en de niet-functionele eisen te beschrijven. Dit vormt stap 18A en kan in ongeveer een halfuur worden uitgevoerd.
+
+### Wat heb ik ermee gedaan?
+
+Ik typ de voorgestelde Markdown zelf in een nieuw document en lees iedere alinea na. Ik pas woorden aan wanneer ik ze zelf niet duidelijk kan uitleggen.
+
+### Controle
+
+Na het opslaan laat ik Codex controleren of de probleemanalyse aansluit op de opdracht en of de eisen overeenkomen met de gebouwde applicatie.
+
+### Eigen beslissing
+
+Ik splits de technische documentatie op in kleine delen. Zo kan ik elk onderdeel begrijpen en controleren voordat ik verderga met de architectuur.
+
+---
+
+## Interactie 57 - Documentatie opgesplitst in functioneel en technisch ontwerp
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Opleverdocumenten correct indelen
+
+### Volledige prompt van de student
+
+> t is denk ik technisch ontwerp en functioneel ontwerp dat zijn 2 documentaties die ik moet inleveren ook
+
+### Antwoord en advies van AI
+
+Codex legde uit dat het functioneel ontwerp beschrijft wat het systeem voor gasten en medewerkers doet. Het technisch ontwerp beschrijft hoe de applicatie met de frontend, backend, API, database en beveiliging is gebouwd. Daarom worden twee aparte bestanden gemaakt: `docs/FUNCTIONEEL-ONTWERP.md` en `docs/TECHNISCH-ONTWERP.md`.
+
+### Wat heb ik ermee gedaan?
+
+Ik plaats de probleemanalyse, doelgroepen, eisen, gebruikersscenario's en wireframes in het functioneel ontwerp. De architectuur, technologiekeuzes, API, database, security en foutafhandeling komen later in het technisch ontwerp.
+
+### Controle
+
+Er was nog geen algemeen technisch document aangemaakt. Daardoor kunnen de twee vereiste documenten direct met de juiste namen en inhoud worden opgebouwd.
+
+### Eigen beslissing
+
+Ik houd het functioneel en technisch ontwerp apart. Zo is duidelijk onderscheid zichtbaar tussen wat de gebruiker nodig heeft en hoe de software dat technisch uitvoert.
+
+---
+
+## Interactie 58 - Stap 18A gecontroleerd en gebruikersscenario's gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Functioneel ontwerp controleren en aanvullen met gebruikssituaties
+
+### Volledige prompt van de student
+
+> oke ik heb t gedaan en nu
+
+### Antwoord en advies van AI
+
+Codex controleerde `docs/FUNCTIONEEL-ONTWERP.md`. De probleemanalyse, het doel, de doelgroepen, functionele eisen, niet-functionele eisen en onderdelen buiten de scope waren aanwezig en correct ingedeeld. Daarna stelde Codex zes gebruikersscenario's voor: voorraad bekijken, inloggen, een verkoop verwerken, voorraad aanvullen, beschikbaarheid aanpassen en een product toevoegen.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg de gebruikersscenario's zelf onderaan het functioneel ontwerp toe. Per scenario beschrijf ik de gebruiker, beginsituatie, stappen en het verwachte resultaat.
+
+### Controle
+
+Na het opslaan laat ik controleren of de scenario's alle belangrijkste functies voor gasten en medewerkers afdekken en niet onnodig technische implementatiedetails bevatten.
+
+### Eigen beslissing
+
+Ik beschrijf de gebruikershandelingen vanuit het perspectief van de gast en medewerker. Technische informatie over API-routes en databasequery's bewaar ik voor het technisch ontwerp.
+
+---
+
+## Interactie 59 - Stap 18B gecontroleerd en wireframes gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Gebruikersscenario's verifiëren en schermindeling ontwerpen
+
+### Volledige prompt van de student
+
+> 18b klaar
+
+### Antwoord en advies van AI
+
+Codex controleerde dat alle zes gebruikersscenario's aanwezig waren. Ieder scenario bevatte een gebruiker, beginsituatie, stappen en verwacht resultaat. Daarna stelde Codex voor om drie eenvoudige wireframes aan het functioneel ontwerp toe te voegen: het publieke e-inkscherm, de mobiele loginpagina en de mobiele beheerpagina.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg de wireframes zelf toe aan `docs/FUNCTIONEEL-ONTWERP.md` en leg bij ieder scherm uit waarom de onderdelen op die manier zijn geplaatst.
+
+### Controle
+
+Het publieke wireframe wordt gecontroleerd op grote tekst, hoog contrast, zichtbare statussen en een indeling zonder scrollen. Bij de mobiele schermen wordt gecontroleerd of de belangrijkste handelingen duidelijk en snel bereikbaar zijn.
+
+### Eigen beslissing
+
+Alleen het publieke e-inkscherm moet zonder scrollen werken. De mobiele beheerpagina mag verticaal scrollen, omdat daarop meer bedieningselementen en productkaarten staan.
+
+---
+
+## Interactie 60 - Stap 18C gecontroleerd en acceptatiecriteria gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Wireframes verifiëren en eisen meetbaar maken
+
+### Volledige prompt van de student
+
+> 18c klaar
+
+### Antwoord en advies van AI
+
+Codex controleerde drie wireframes voor het publieke e-inkscherm, de mobiele loginpagina en de mobiele beheerpagina. Alle tekstblokken waren correct afgesloten. Ook stond duidelijk vermeld dat het publieke scherm niet mag scrollen en dat verticaal scrollen op de mobiele beheerpagina wel is toegestaan. Daarna stelde Codex acceptatiecriteria voor die de functionele eisen koppelen aan de testgevallen.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg een tabel met tien acceptatiecriteria toe en verwijs bij ieder criterium naar de relevante testnummers uit `Testplan.md`. Daarna sluit ik het functioneel ontwerp af met een korte conclusie.
+
+### Controle
+
+Na het opslaan wordt gecontroleerd of elk acceptatiecriterium meetbaar is, een testverwijzing heeft en samen met de andere criteria de belangrijkste eisen afdekt.
+
+### Eigen beslissing
+
+Ik verwijs naar het bestaande testplan in plaats van dezelfde testbeschrijvingen opnieuw volledig te kopiëren. Daardoor blijven de twee documenten overzichtelijk en consistent.
+
+---
+
+## Interactie 61 - Functioneel ontwerp afgerond en technisch ontwerp gestart
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Acceptatiecriteria controleren en architectuur documenteren
+
+### Volledige prompt van de student
+
+> 18d klaar
+
+### Antwoord en advies van AI
+
+Codex controleerde tien unieke acceptatiecriteria, tien koppelingen met testgevallen, de verwijzing naar `Testplan.md` en de afsluitende conclusie. Daarmee was het functioneel ontwerp compleet. Voor stap 19A stelde Codex een nieuw bestand `docs/TECHNISCH-ONTWERP.md` voor met een architectuuroverzicht van de browserinterfaces, Node.js met Express, sessiebeveiliging en de SQLite-database.
+
+### Wat heb ik ermee gedaan?
+
+Ik maak het technisch ontwerp zelf aan en beschrijf eerst de hoofdonderdelen en gegevensstromen. Gedetailleerde technologiekeuzes, API-routes, tabellen en beveiligingsmaatregelen voeg ik in latere deelstappen toe.
+
+### Controle
+
+De beschreven architectuur wordt na het opslaan vergeleken met de werkelijke bestanden `server.js`, `database.js`, `wachtwoorden.js` en de bestanden in `public`.
+
+### Eigen beslissing
+
+Ik gebruik een eenvoudige architectuur met drie lagen: gebruikersinterfaces in de browser, een Express-backend en een SQLite-database. Dit is overzichtelijk genoeg om tijdens de presentatie zelf uit te leggen.
