@@ -31,6 +31,20 @@
         <p id="melding" class="melding" role="status" aria-live="polite">
         </p>
 
+        <details class="historie">
+            <summary>
+                Wijzigingshistorie bekijken
+            </summary>
+
+            <p>
+                Hier staan de honderd nieuwste productwijzigingen.
+            </p>
+
+            <div id="wijzigingen" class="wijzigingen" aria-live="polite">
+                Historie wordt geladen...
+            </div>
+        </details>
+
 
         <section class="nieuw-product">
             <h2>Nieuw product</h2>
@@ -44,6 +58,17 @@
                 <div class="veld">
                     <label for="beginvoorraad">Beginvoorraad</label>
                     <input id="beginvoorraad" type="number" min="0" max="10000" step="1" value="0" required>
+                </div>
+
+                <div class="veld">
+                    <label for="productprijs">Prijs in euro</label>
+                    <input id="productprijs" type="number" min="0.01" max="10000" step="0.01" placeholder="1.80"
+                        required>
+                </div>
+
+                <div class="veld">
+                    <label for="producteenheid">Prijs per</label>
+                    <input id="producteenheid" type="text" minlength="1" maxlength="30" value="stuk" required>
                 </div>
 
                 <button class="toevoegknop" type="submit">

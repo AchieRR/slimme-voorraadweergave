@@ -11,8 +11,17 @@ const productnaamInvoer =
 const beginvoorraadInvoer =
     document.querySelector("#beginvoorraad");
 
+const productprijsInvoer =
+    document.querySelector("#productprijs");
+
+const producteenheidInvoer =
+    document.querySelector("#producteenheid");
+
 const medewerkernaamElement =
     document.querySelector("#medewerkernaam");
+
+const wijzigingenContainer =
+    document.querySelector("#wijzigingen");
 
 const uitlogknop =
     document.querySelector("#uitlogknop");
@@ -38,6 +47,62 @@ async function leesApiAntwoord(response) {
     return response.json();
 }
 
+function formatteerPrijs(prijsCent) {
+    return new Intl.NumberFormat("nl-NL", {
+        style: "currency",
+        currency: "EUR"
+    }).format(prijsCent / 100);
+}
+
+function formatteerWijzigingssoort(soort) {
+    const namen = {
+        product_toegevoegd: "Product toegevoegd",
+        voorraad: "Voorraad gewijzigd",
+        prijs: "Prijs gewijzigd",
+        beschikbaarheid: "Beschikbaarheid gewijzigd"
+    };
+
+    return namen[soort] || soort;
+}
+
+function maakWijzigingElement(wijziging) {
+    const artikel = document.createElement("article");
+    artikel.classList.add("wijziging");
+
+    const titel = document.createElement("h3");
+    titel.textContent =
+        `${wijziging.productnaam}: ` +
+        formatteerWijzigingssoort(wijziging.soort);
+
+    const verandering = document.createElement("p");
+    verandering.classList.add("wijziging-waarden");
+
+    const oudeWaarde =
+        wijziging.oude_waarde ?? "Geen vorige waarde";
+
+    verandering.textContent =
+        `${oudeWaarde} naar ${wijziging.nieuwe_waarde}`;
+
+    const datum = new Date(wijziging.gewijzigd_op);
+
+    const informatie = document.createElement("p");
+    informatie.classList.add('wijziging-informatie');
+    informatie.textContent =
+        `${wijziging.medewerker} - ` +
+        datum.toLocaleString("nl-NL", {
+            dateStyle: "short",
+            timeStyle: "short"
+        });
+
+    artikel.append(
+        titel,
+        verandering,
+        informatie
+    );
+
+    return artikel;
+}
+
 function maakProductElement(product) {
     const productElement = document.createElement("article");
     productElement.classList.add("product");
@@ -51,6 +116,7 @@ function maakProductElement(product) {
     const naamElement = document.createElement("h2");
     naamElement.textContent = product.naam;
 
+
     const voorraadElement = document.createElement("p");
     voorraadElement.classList.add("voorraad");
 
@@ -61,6 +127,17 @@ function maakProductElement(product) {
         "voorraad: ",
         voorraadGetal,
     );
+
+    const prijsElement = document.createElement("p");
+    prijsElement.classList.add("productprijs");
+
+    if (product.prijs_cent === 0) {
+        prijsElement.textContent =
+            "Prijs: nog niet ingesteld";
+    } else {
+        prijsElement.textContent =
+            `Prijs: ${formatteerPrijs(product.prijs_cent)} per ${product.eenheid} `;
+    }
 
     const statusElement = document.createElement("p");
     statusElement.classList.add("productstatus");
@@ -95,14 +172,19 @@ function maakProductElement(product) {
     knoppenElement.append(minKnop, plusKnop);
 
     const instelFormulier =
-        maakiInstelFormulier(product);
+        maakInstelFormulier(product);
 
     const beschikbaarheidsknop =
         maakBeschikbaarheidsKnop(product);
 
+    const prijsFormulier =
+        maakPrijsFormulier(product);
+
     productElement.append(
         naamElement,
         voorraadElement,
+        prijsElement,
+        prijsFormulier,
         knoppenElement,
         instelFormulier,
         beschikbaarheidsknop,
@@ -155,16 +237,16 @@ function maakBeschikbaarheidsKnop(product) {
     return knop;
 }
 
-function maakiInstelFormulier(product) {
+function maakInstelFormulier(product) {
     const formulier = document.createElement("form");
     formulier.classList.add("instel-formulier");
 
     const label = document.createElement("label");
     label.textContent = "Voorraad instellen:";
-    label.htmlFor = `voorraad-${product.id}`;
+    label.htmlFor = `voorraad - ${product.id} `;
 
     const invoer = document.createElement("input");
-    invoer.id = `voorraad-${product.id}`;
+    invoer.id = `voorraad - ${product.id} `;
     invoer.classList.add("voorraad-invoer");
     invoer.type = "number";
     invoer.min = 0;
@@ -199,12 +281,85 @@ function maakiInstelFormulier(product) {
     return formulier;
 }
 
+function maakPrijsFormulier(product) {
+    const formulier = document.createElement("form");
+    formulier.classList.add("prijs-formulier");
+
+    const prijsVeld = document.createElement("label");
+    prijsVeld.textContent = "Prijs in euro:";
+
+    const prijsInvoer = document.createElement("input");
+    prijsInvoer.type = "number";
+    prijsInvoer.min = "0.01";
+    prijsInvoer.max = "10000";
+    prijsInvoer.step = "0.01";
+    prijsInvoer.required = true;
+
+
+    prijsInvoer.value =
+        product.prijs_cent > 0
+            ? (product.prijs_cent / 100).toFixed(2)
+            : "";
+
+    prijsVeld.append(prijsInvoer);
+
+    const eenheidVeld = document.createElement("label");
+    eenheidVeld.textContent = "Prijs per:";
+
+    const eenheidInvoer = document.createElement("input");
+    eenheidInvoer.type = "text";
+    eenheidInvoer.minLength = 1;
+    eenheidInvoer.maxLength = 30;
+    eenheidInvoer.required = true;
+    eenheidInvoer.value = product.eenheid;
+
+    eenheidVeld.append(eenheidInvoer);
+
+    const knop = document.createElement("button");
+    knop.type = "submit";
+    knop.textContent = "Prijs instellen";
+
+    formulier.append(
+        prijsVeld,
+        eenheidVeld,
+        knop
+    );
+
+    formulier.addEventListener(
+        "submit",
+        async (event) => {
+            event.preventDefault();
+
+            const prijs =
+                Number(prijsInvoer.value);
+
+            const prijsCent =
+                Math.round(prijs * 100);
+
+            const eenheid =
+                eenheidInvoer.value.trim();
+
+            knop.disabled = true;
+
+            await stelPrijsIn(
+                product.id,
+                prijsCent,
+                eenheid
+            );
+
+            knop.disabled = false;
+        }
+    );
+
+    return formulier;
+}
+
 async function laadProducten() {
     try {
         const response = await fetch("/api/producten");
 
         if (!response.ok) {
-            throw new Error(`API-fout: ${response.status}`);
+            throw new Error(`API - fout: ${response.status} `);
         }
 
         const producten = await leesApiAntwoord(response);
@@ -227,9 +382,42 @@ async function laadProducten() {
     }
 }
 
+async function laadWijzigingen() {
+    try {
+        const response = await fetch("/api/wijzigingen");
+        const wijzigingen = await leesApiAntwoord(response);
+
+        if (!response.ok) {
+            throw new Error(
+                wijzigingen.fout ||
+                "De wijzigingshistorie kon niet worden opgehaald."
+            );
+
+        }
+        wijzigingenContainer.replaceChildren();
+
+        if (wijzigingen.length === 0) {
+            wijzigingenContainer.textContent =
+                "Er zijn nog geen wijzigingen.";
+            return;
+        }
+
+        for (const wijziging of wijzigingen) {
+            const wijzigingElement =
+                maakWijzigingElement(wijziging);
+
+            wijzigingenContainer.append(wijzigingElement);
+        }
+    } catch (error) {
+        console.error("Historie ophalen mislukt:", error);
+
+        wijzigingenContainer.textContent =
+            error.message;
+    }
+}
 
 async function wijzigVoorraad(productId, verschil) {
-    meldingElement.textContent = "Voorraaad aanpassen...";
+    meldingElement.textContent = "Voorraad aanpassen...";
 
     try {
         const response = await fetch(
@@ -253,7 +441,10 @@ async function wijzigVoorraad(productId, verschil) {
         meldingElement.textContent =
             `${resultaat.naam} voorraad is aangepast naar ${resultaat.voorraad}.`;
 
-        await laadProducten();
+        await Promise.all([
+            laadProducten(),
+            laadWijzigingen()
+        ]);
     } catch (error) {
         console.error("Voorraad wijzigen mislukt:", error);
 
@@ -291,9 +482,64 @@ async function stelVoorraadin(productId, voorraad) {
         meldingElement.textContent =
             `${resultaat.naam} voorraad is ingesteld op ${resultaat.voorraad}.`;
 
-        await laadProducten();
+        await Promise.all([
+            laadProducten(),
+            laadWijzigingen()
+        ]);
     } catch (error) {
         console.error("Voorraad instellen mislukt:", error);
+
+        meldingElement.textContent = error.message;
+    }
+}
+
+async function stelPrijsIn(
+    productId,
+    prijsCent,
+    eenheid
+) {
+    meldingElement.textContent =
+        "Prijs aanpassen...";
+
+    try {
+        const response = await fetch(
+            `/api/producten/${productId}/prijs`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    prijs_cent: prijsCent,
+                    eenheid: eenheid
+                })
+            }
+        );
+
+        const resultaat =
+            await leesApiAntwoord(response);
+
+        if (!response.ok) {
+            throw new Error(
+                resultaat.fout ||
+                "De prijs kon niet worden aangepast."
+            );
+        }
+
+        meldingElement.textContent =
+            `${resultaat.naam} kost nu ` +
+            `${formatteerPrijs(resultaat.prijs_cent)} ` +
+            `per ${resultaat.eenheid}.`;
+
+        await Promise.all([
+            laadProducten(),
+            laadWijzigingen()
+        ]);
+    } catch (error) {
+        console.error(
+            "Prijs aanpassen mislukt:",
+            error
+        );
 
         meldingElement.textContent = error.message;
     }
@@ -337,7 +583,10 @@ async function stelBeschikbaarheid(
         meldingElement.textContent =
             `${resultaat.naam} is nu ${statusTekst}.`;
 
-        await laadProducten();
+        await Promise.all([
+            laadProducten(),
+            laadWijzigingen()
+        ]);
     } catch (error) {
         console.error(
             "Beschikbaarheid aanpassen mislukt:",
@@ -353,6 +602,9 @@ nieuweProductFormulier.addEventListener("submit", async (event) => {
 
     const naam = productnaamInvoer.value.trim();
     const voorraad = Number(beginvoorraadInvoer.value);
+    const prijs = Number(productprijsInvoer.value);
+    const prijsCent = Math.round(prijs * 100);
+    const eenheid = producteenheidInvoer.value.trim();
     const knop = nieuweProductFormulier.querySelector("button");
 
     knop.disabled = true;
@@ -366,7 +618,9 @@ nieuweProductFormulier.addEventListener("submit", async (event) => {
             },
             body: JSON.stringify({
                 naam: naam,
-                voorraad: voorraad
+                voorraad: voorraad,
+                prijs_cent: prijsCent,
+                eenheid: eenheid
             })
         });
 
@@ -384,8 +638,12 @@ nieuweProductFormulier.addEventListener("submit", async (event) => {
 
         nieuweProductFormulier.reset();
         beginvoorraadInvoer.value = 0;
+        producteenheidInvoer.value = "stuk";
 
-        await laadProducten();
+        await Promise.all([
+            laadProducten(),
+            laadWijzigingen()
+        ]);
     } catch (error) {
         console.error("Product toevoegen mislukt:", error);
         meldingElement.textContent = error.message;
@@ -459,8 +717,11 @@ async function startBeheer() {
     const ingelogd = await controleerSessie();
 
     if (ingelogd) {
-        await laadProducten();
+        await Promise.all([
+            laadProducten(),
+            laadWijzigingen()
+        ]);
     }
 }
 
-startBeheer();        
+startBeheer();

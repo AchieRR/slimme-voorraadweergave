@@ -44,6 +44,42 @@ function vereisLogin(request, response, next) {
     next();
 }
 
+const voegWijzigingToe = database.prepare(`
+    INSERT INTO wijzigingen (
+        product_id,
+        medewerker_id,
+        soort,
+        oude_waarde,
+        nieuwe_waarde
+    )
+    VALUES (?, ?, ?, ?, ?)
+`);
+
+function registreerWijziging({
+    productId,
+    medewerkerId,
+    soort,
+    oudeWaarde,
+    nieuweWaarde
+}) {
+    const oudeTekst =
+        oudeWaarde === null ||
+            oudeWaarde === undefined
+            ? null
+            : String(oudeWaarde);
+
+    const nieuweTekst =
+        String(nieuweWaarde);
+
+    voegWijzigingToe.run(
+        productId,
+        medewerkerId,
+        soort,
+        oudeTekst,
+        nieuweTekst
+    );
+}
+
 app.get("/beheer.html", (request, response) => {
     if (!request.session.medewerker) {
         return response.redirect("/inloggen.html");
@@ -60,10 +96,10 @@ app.use(express.static(path.join(__dirname, "public")));
 app.get("/api/producten", (request, response) => {
     try {
         const query = database.prepare(`
-            SELECT id, naam, voorraad, beschikbaar
+            SELECT id, naam, voorraad, prijs_cent, eenheid, beschikbaar
             FROM producten
             ORDER BY naam
-        `);
+    `);
 
         const producten = query.all();
 
@@ -103,12 +139,12 @@ app.post("/api/inloggen", (request, response) => {
         const medewerker = database.prepare(`
             SELECT
                 id,
-                gebruikersnaam,
-                wachtwoord_hash,
-                zout
+    gebruikersnaam,
+    wachtwoord_hash,
+    zout
             FROM medewerkers
-            WHERE gebruikersnaam = ? 
-        `).get(gebruikersnaam);
+            WHERE gebruikersnaam = ?
+    `).get(gebruikersnaam);
 
         const geldigeWachtwoord =
             medewerker &&
@@ -164,6 +200,46 @@ app.get("/api/sessie", (request, response) => {
     });
 });
 
+app.get(
+    "/api/wijzigingen",
+    vereisLogin,
+    (request, response) => {
+        try {
+            const wijzigingen = database.prepare(`
+                SELECT
+                    w.id,
+                    p.naam AS productnaam,
+                    m.gebruikersnaam AS medewerker,
+                    w.soort,
+                    w.oude_waarde,
+                    w.nieuwe_waarde,
+                    strftime(
+                        '%Y-%m-%dT%H:%M:%SZ',
+                        w.gewijzigd_op
+                    ) AS gewijzigd_op
+                FROM wijzigingen AS w
+                JOIN producten AS p
+                    ON p.id = w.product_id
+                JOIN medewerkers AS m
+                    ON m.id = w.medewerker_id
+                ORDER BY w.id DESC
+                LIMIT 100
+            `).all();
+
+            return response.json(wijzigingen);
+        } catch (error) {
+            console.error(
+                "Historie ophalen mislukt:",
+                error
+            );
+
+            return response.status(500).json({
+                fout: "De wijzigingshistorie kon niet worden opgehaald."
+            });
+        }
+    }
+);
+
 app.post("/api/uitloggen", vereisLogin, (request, response) => {
     request.session.destroy((error) => {
         if (error) {
@@ -195,6 +271,13 @@ app.post("/api/producten", vereisLogin, (request, response) => {
 
         const voorraad = request.body?.voorraad;
 
+        const prijsCent = request.body?.prijs_cent;
+
+        const eenheid =
+            typeof request.body?.eenheid === "string"
+                ? request.body.eenheid.trim().toLowerCase()
+                : "";
+
         if (naam.length < 2 || naam.length > 100) {
             return response.status(400).json({
                 fout: "Naam moet tussen 2 en 100 tekens bevatten."
@@ -212,6 +295,22 @@ app.post("/api/producten", vereisLogin, (request, response) => {
             });
         }
 
+        if (
+            !Number.isInteger(prijsCent) ||
+            prijsCent < 1 ||
+            prijsCent > 1000000
+        ) {
+            return response.status(400).json({
+                fout: "Prijs moet tussen 1 cent en 10.000 euro zijn."
+            });
+        }
+
+        if (eenheid.length < 1 || eenheid.length > 30) {
+            return response.status(400).json({
+                fout: "Eenheid moet tussen 1 en 30 tekens bevatten."
+            });
+        }
+
         const bestaandProduct = database.prepare(`
         SELECT id
         FROM producten
@@ -225,10 +324,38 @@ app.post("/api/producten", vereisLogin, (request, response) => {
         }
 
         const product = database.prepare(`
-        INSERT INTO producten (naam, voorraad)
-        VALUES (?, ?)
-        RETURNING id, naam, voorraad, beschikbaar
-    `).get(naam, voorraad);
+            INSERT INTO producten(
+        naam,
+        voorraad,
+        prijs_cent,
+        eenheid
+    )
+            VALUES(?, ?, ?, ?)
+            RETURNING
+                id,
+    naam,
+    voorraad,
+    prijs_cent,
+    eenheid,
+    beschikbaar
+        `).get(
+            naam,
+            voorraad,
+            prijsCent,
+            eenheid
+        );
+
+        registreerWijziging({
+            productId: product.id,
+            medewerkerId:
+                request.session.medewerker.id,
+            soort: "product_toegevoegd",
+            oudeWaarde: null,
+            nieuweWaarde:
+                `Voorraad ${product.voorraad}, ` +
+                `${product.prijs_cent} cent per ` +
+                `${product.eenheid}`
+        });
 
         return response.status(201).json(product);
     } catch (error) {
@@ -265,10 +392,10 @@ app.patch("/api/producten/:id/voorraad", vereisLogin, (request, response) => {
         const wijzigVoorraad = database.prepare(`
             UPDATE producten
             SET voorraad = voorraad + ?
-            WHERE id = ?
-              AND voorraad + ? >= 0
-            RETURNING id, naam, voorraad, beschikbaar
-        `);
+    WHERE id = ?
+        AND voorraad + ? >= 0
+            RETURNING id, naam, voorraad, prijs_cent, eenheid, beschikbaar
+    `);
 
         const product = wijzigVoorraad.get(
             verschil,
@@ -277,6 +404,17 @@ app.patch("/api/producten/:id/voorraad", vereisLogin, (request, response) => {
         );
 
         if (product) {
+            registreerWijziging({
+                productId: product.id,
+                medewerkerId:
+                    request.session.medewerker.id,
+                soort: "voorraad",
+                oudeWaarde:
+                    product.voorraad - verschil,
+                nieuweWaarde:
+                    product.voorraad
+            });
+
             return response.json(product);
         }
 
@@ -323,16 +461,41 @@ app.put("/api/producten/:id/voorraad", vereisLogin, (request, response) => {
             });
         }
 
+        const vorigeSituatie = database.prepare(`
+            SELECT voorraad
+            FROM producten
+            WHERE id = ?
+        `).get(productId);
+
+        if (!vorigeSituatie) {
+            return response.status(404).json({
+                fout: "Product niet gevonden."
+            });
+        }
+
         const product = database.prepare(`
             UPDATE producten
             SET voorraad = ?
-            WHERE id = ?
-            RETURNING id, naam, voorraad, beschikbaar
-        `).get(voorraad, productId);
+    WHERE id = ?
+        RETURNING id, naam, voorraad, prijs_cent, eenheid, beschikbaar
+    `).get(voorraad, productId);
 
         if (!product) {
             return response.status(404).json({
                 fout: "Product niet gevonden."
+            });
+        }
+
+        if (vorigeSituatie.voorraad !== product.voorraad) {
+            registreerWijziging({
+                productId: product.id,
+                medewerkerId:
+                    request.session.medewerker.id,
+                soort: "voorraad",
+                oudeWaarde:
+                    vorigeSituatie.voorraad,
+                nieuweWaarde:
+                    product.voorraad
             });
         }
 
@@ -345,6 +508,112 @@ app.put("/api/producten/:id/voorraad", vereisLogin, (request, response) => {
         });
     }
 });
+
+app.put(
+    "/api/producten/:id/prijs",
+    vereisLogin,
+    (request, response) => {
+        try {
+            const productId = Number(request.params.id);
+            const prijsCent = request.body?.prijs_cent;
+
+            const eenheid =
+                typeof request.body?.eenheid === "string"
+                    ? request.body.eenheid.trim().toLowerCase()
+                    : "";
+
+            if (
+                !Number.isInteger(productId) ||
+                productId < 1
+            ) {
+                return response.status(400).json({
+                    fout: "Het productnummer is ongeldig."
+                });
+            }
+
+            if (
+                !Number.isInteger(prijsCent) ||
+                prijsCent < 1 ||
+                prijsCent > 1000000
+            ) {
+                return response.status(400).json({
+                    fout: "Prijs moet tussen 1 cent en 10.000 euro zijn."
+                });
+            }
+
+            if (
+                eenheid.length < 1 ||
+                eenheid.length > 30
+            ) {
+                return response.status(400).json({
+                    fout: "Eenheid moet tussen 1 en 30 tekens bevatten."
+                });
+            }
+
+            const vorigeSituatie = database.prepare(`
+                SELECT prijs_cent, eenheid
+                FROM producten
+                WHERE id = ?
+                `).get(productId);
+
+            if (!vorigeSituatie) {
+                return response.status(404).json({
+                    fout: "Product niet gevonden."
+                });
+            }
+
+            const product = database.prepare(`
+                UPDATE producten
+                SET prijs_cent = ?,
+    eenheid = ?
+        WHERE id = ?
+            RETURNING id, naam, voorraad, prijs_cent, eenheid, beschikbaar
+    `).get(
+                prijsCent,
+                eenheid,
+                productId
+            );
+
+            if (!product) {
+                return response.status(404).json({
+                    fout: "Product niet gevonden."
+                });
+            }
+
+            const prijsIsGewijzigd =
+                vorigeSituatie.prijs_cent !==
+                product.prijs_cent ||
+                vorigeSituatie.eenheid !==
+                product.eenheid;
+
+            if (prijsIsGewijzigd) {
+                registreerWijziging({
+                    productId: product.id,
+                    medewerkerId:
+                        request.session.medewerker.id,
+                    soort: "prijs",
+                    oudeWaarde:
+                        `${vorigeSituatie.prijs_cent} cent ` +
+                        `per ${vorigeSituatie.eenheid}`,
+                    nieuweWaarde:
+                        `${product.prijs_cent} cent ` +
+                        `per ${product.eenheid}`
+                });
+            }
+
+            return response.json(product);
+        } catch (error) {
+            console.error(
+                "Prijs wijzigen mislukt:",
+                error
+            );
+
+            return response.status(500).json({
+                fout: "De prijs kon niet worden gewijzigd."
+            });
+        }
+    }
+);
 
 app.put(
     "/api/producten/:id/beschikbaarheid",
@@ -369,12 +638,24 @@ app.put(
                 });
             }
 
+            const vorigeSituatie = database.prepare(`
+                SELECT beschikbaar
+                FROM producten
+                WHERE id = ?
+            `).get(productId);
+
+            if (!vorigeSituatie) {
+                return response.status(404).json({
+                    fout: 'Product niet gevonden.'
+                });
+            }
+
             const product = database.prepare(`
                 UPDATE producten
                 SET beschikbaar = ?
-                WHERE id = ?
-                RETURNING id, naam, voorraad, beschikbaar
-            `).get(
+    WHERE id = ?
+        RETURNING id, naam, voorraad, prijs_cent, eenheid, beschikbaar
+    `).get(
                 beschikbaar ? 1 : 0,
                 productId
             );
@@ -385,6 +666,27 @@ app.put(
                 });
             }
 
+            if (
+                vorigeSituatie.beschikbaar !==
+                product.beschikbaar
+            ) {
+                registreerWijziging({
+                    productId: product.id,
+                    medewerkerId:
+                        request.session.medewerker.id,
+                    soort: "beschikbaarheid",
+                    oudeWaarde:
+                        vorigeSituatie.beschikbaar === 1
+                            ? "beschikbaar"
+                            : "tijdelijk niet beschikbaar",
+                    nieuweWaarde:
+                        product.beschikbaar === 1
+                            ? "beschikbaar"
+                            : "tijdelijk niet beschikbaar"
+                });
+            }
+
+
             return response.json(product);
         } catch (error) {
             console.error(
@@ -393,7 +695,7 @@ app.put(
             );
 
             return response.status(500).json({
-                fout: "De beschikbaarheid kon niet worden gewijzig."
+                fout: "De beschikbaarheid kon niet worden gewijzigd."
             });
         }
     }

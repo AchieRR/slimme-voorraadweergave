@@ -1,50 +1,76 @@
-# Testplan – Slimme voorraadweergave
+# Testplan - Slimme voorraadweergave
 
-**Tester:** Ahmad  
-**Testomgeving:** Lokale Node.js-server en SQLite-database  
-**Browsers:** Chrome en mobiele browserweergave  
-**Datum:** 2 september 2026
+**Tester:** Ahmad
 
-## Doel
+**Testomgeving:** lokale Node.js-server, SQLite-database en browser
 
-Met dit testplan controleer ik of de publieke voorraadweergave,
-de mobiele beheeromgeving, de API, authenticatie, foutafhandeling
-en database correct werken.
+**Schermtests:** desktop en mobiele browserweergave
 
-## Betekenis van de statussen
+**Bijgewerkt:** 4 september 2026
 
-- Nog uitvoeren
-- Geslaagd
-- Mislukt
+## 1. Doel
 
-## Testgevallen
+Dit testplan controleert de publieke voorraadweergave, mobiele beheeromgeving, API, database, authenticatie, invoervalidatie, prijzen, verkoopeenheden, wijzigingshistorie en foutafhandeling.
+
+## 2. Werkwijze
+
+- Tijdelijke voorraad-, prijs- en beschikbaarheidswijzigingen worden na een test teruggezet wanneer dat nodig is.
+- Een testproduct mag na afloop blijven bestaan wanneer het bewust als demonstratiegegevens wordt gebruikt.
+- Beveiligde routes worden zowel zonder als met medewerkerssessie getest.
+- `Geslaagd` betekent dat werkelijk en verwacht resultaat overeenkomen.
+- De echte e-inkhardware wordt na levering aanvullend getest.
+
+## 3. Testgevallen en resultaten
 
 | ID | Onderdeel | Test | Verwacht resultaat | Werkelijk resultaat | Status |
 |---|---|---|---|---|---|
-| T01 | API | GET `/api/producten` uitvoeren | Status 200 en een JSON-lijst met producten | Status 200 ontvangen met een JSON-lijst van zes producten | Geslaagd |
-| T02 | Database | Server herstarten en producten opnieuw ophalen | Voorraad en producten zijn na de herstart niet verdwenen | Na de serverherstart waren dezelfde zes producten en voorraadwaarden aanwezig | Geslaagd |
-| T03 | Publieke pagina | Publieke pagina openen | Productnaam en actuele voorraad worden getoond | De productnamen en actuele voorraadwaarden werden correct getoond | Geslaagd |
-| T04 | Beschikbaarheid | Product met voorraad en status beschikbaar tonen | De tekst `Beschikbaar` wordt getoond | Bij een beschikbaar product met voorraad stond de tekst `Beschikbaar` | Geslaagd |
-| T05 | Uitverkocht | Voorraad tijdelijk op 0 instellen | De tekst `Uitverkocht` en een zwarte kaart worden getoond | Bij voorraad 0 verschenen de tekst `Uitverkocht` en een zwarte kaart | Geslaagd |
-| T06 | Tijdelijk niet beschikbaar | Product tijdelijk uitschakelen | De juiste statustekst en een zwarte kaart worden getoond | De tekst `Tijdelijk niet beschikbaar` en een zwarte kaart werden getoond | Geslaagd |
-| T07 | Automatisch vernieuwen | Voorraad wijzigen en maximaal 60 seconden wachten | De publieke pagina toont automatisch de nieuwe voorraad | De gewijzigde voorraad verscheen automatisch bij de verversing van 60 seconden | Geslaagd |
-| T08 | E-inkformaat | Publieke pagina testen op 800x600 en 600x800 | Alle producten zijn zichtbaar zonder scrollen | Op 800x600 en 600x800 stonden alle zes kaarten binnen beeld zonder scrollen | Geslaagd |
-| T09 | Mobiele weergave | Beheerpagina testen op 390x844 | Geen horizontale scroll en alle knoppen zijn bruikbaar | Op 390x844 was geen horizontale scroll en werkten de plus- en minknop | Geslaagd |
-| T10 | Verkeerde login | Inloggen met een verkeerd wachtwoord | Status 401 en geen toegang tot het beheer | De server gaf status 401 en maakte geen geldige sessie aan | Geslaagd |
-| T11 | Geldige login | Inloggen met een correct medewerkersaccount | Beheerpagina opent en medewerkersnaam is zichtbaar | Inloggen gaf status 200 en `medewerker1` werd op de beheerpagina getoond | Geslaagd |
-| T12 | Beveiligde pagina | `/beheer.html` zonder sessie openen | Browser stuurt door naar `/inloggen.html` | Zonder sessie volgde een redirect naar `/inloggen.html` | Geslaagd |
-| T13 | Autorisatie | Voorraad wijzigen zonder ingelogde sessie | Status 401 en voorraad blijft gelijk | De aanvraag gaf status 401 en de voorraad bleef ongewijzigd | Geslaagd |
-| T14 | Voorraadknoppen | Eén keer plus en daarna één keer min gebruiken | Voorraad stijgt en keert daarna terug naar de beginwaarde | Plus verhoogde de voorraad met 1 en min herstelde de beginwaarde | Geslaagd |
-| T15 | Negatieve voorraad | Voorraad onder 0 proberen te brengen | Status 400 en voorraad wordt niet negatief | De server gaf status 400 en de voorraad bleef gelijk | Geslaagd |
-| T16 | Voorraad instellen | Een geldig geheel getal instellen | Status 200 en de nieuwe voorraad wordt opgeslagen | De server gaf status 200 en sloeg de ingestelde voorraad correct op | Geslaagd |
-| T17 | Ongeldige invoer | Een negatief getal, kommagetal of te hoog getal insturen | Status 400 en de voorraad blijft gelijk | Alle drie ongeldige waarden gaven status 400 en veranderden de voorraad niet | Geslaagd |
-| T18 | Product toevoegen | Een testproduct toevoegen en dezelfde naam opnieuw toevoegen | Eerste aanvraag geeft 201, dubbele naam geeft 409 | Toevoegen gaf status 201 en de dubbele naam gaf status 409 | Geslaagd |
-| T19 | Beschikbaarheid wijzigen | Product uitschakelen en opnieuw inschakelen | Status verandert, maar de voorraad blijft gelijk | Uitschakelen en inschakelen wijzigde alleen de status; de voorraad bleef gelijk | Geslaagd |
-| T20 | Netwerkstoring | Eerste en latere API-storing simuleren en daarna herstellen | Duidelijke melding, laatst geladen voorraad blijft staan en herstel werkt | Beide storingsmeldingen klopten, zes kaarten bleven bij latere uitval staan en herstel werkte | Geslaagd |
+| T01 | Producten-API | `GET /api/producten` uitvoeren | Status 200 en JSON-lijst met alle productvelden | Status 200; id, naam, voorraad, prijs, eenheid en beschikbaarheid ontvangen | Geslaagd |
+| T02 | Database | Server herstarten en producten opnieuw ophalen | Productgegevens blijven bestaan | Dezelfde opgeslagen producten en waarden bleven aanwezig | Geslaagd |
+| T03 | Publieke pagina | Publieke pagina openen | Productnaam, voorraad en status zijn zichtbaar | De actuele productkaarten werden correct opgebouwd | Geslaagd |
+| T04 | Beschikbaar | Product met voorraad en status beschikbaar tonen | Tekst `Beschikbaar` | De juiste statustekst verscheen | Geslaagd |
+| T05 | Uitverkocht | Voorraad tijdelijk op 0 instellen | `Uitverkocht` en duidelijke contrasterende kaart | Tekst en contrast veranderden correct | Geslaagd |
+| T06 | Niet beschikbaar | Product tijdelijk uitschakelen | `Tijdelijk niet beschikbaar` en voorraad blijft bewaard | Status wijzigde; voorraad bleef gelijk | Geslaagd |
+| T07 | Automatisch vernieuwen | Voorraad wijzigen en maximaal 30 seconden wachten zonder handmatige refresh | Publieke pagina toont binnen 30 seconden de nieuwe voorraad | De wijziging verscheen automatisch binnen 30 seconden | Geslaagd |
+| T08 | E-inkformaat | Publieke pagina testen op 800x600, 600x800, 1200x825 en 1280x720 | Productkaarten blijven zonder handmatige scroll zichtbaar | De gesimuleerde schermtests slaagden met de gebruikte testset | Geslaagd |
+| T09 | Mobiele weergave | Beheerpagina testen op 390x844 | Geen horizontale scroll en knoppen zijn bruikbaar | De pagina bleef mobiel bruikbaar | Geslaagd |
+| T10 | Verkeerde login | Verkeerd wachtwoord gebruiken | Status 401 en geen sessie | Status 401 en geen toegang | Geslaagd |
+| T11 | Geldige login | Correct medewerkersaccount gebruiken | Status 200, sessie en beheerpagina | Inloggen en medewerkersnaam werkten | Geslaagd |
+| T12 | Beveiligde pagina | `/beheer.html` zonder sessie openen | Redirect naar `/inloggen.html` | Redirect werd uitgevoerd | Geslaagd |
+| T13 | Autorisatie wijziging | Voorraad wijzigen zonder sessie | Status 401 en geen wijziging | Aanvraag geweigerd; voorraad bleef gelijk | Geslaagd |
+| T14 | Voorraadknoppen | Eén keer `+1` en daarna `-1` | Eerst één hoger, daarna beginwaarde hersteld | Beide knoppen en herstel werkten | Geslaagd |
+| T15 | Negatieve voorraad | Voorraad onder 0 proberen te brengen | Status 400 en geen negatieve voorraad | Status 400; waarde bleef geldig | Geslaagd |
+| T16 | Voorraad instellen | Geldig geheel getal instellen | Status 200 en nieuwe waarde opgeslagen | Waarde werd opgeslagen en getoond | Geslaagd |
+| T17 | Ongeldige voorraad | Negatief getal, kommagetal en te hoog getal insturen | Status 400 en geen wijziging | Alle ongeldige waarden werden geweigerd | Geslaagd |
+| T18 | Product toevoegen | Product toevoegen en dezelfde naam nogmaals gebruiken | Eerst 201, daarna 409 | Product werd toegevoegd; dubbele naam geweigerd | Geslaagd |
+| T19 | Beschikbaarheid wijzigen | Uitschakelen en opnieuw inschakelen | Alleen status verandert | Beide richtingen werkten; voorraad bleef gelijk | Geslaagd |
+| T20 | Netwerkstoring | Eerste en latere API-storing simuleren en herstellen | Begrijpelijke melding, behoud van oude kaarten en automatisch herstel | Alle drie situaties werkten zoals bedoeld | Geslaagd |
+| T21 | Nieuw product met prijs | Naam, voorraad, prijs en eenheid toevoegen | Status 201 en alle waarden opgeslagen | Product met prijs in centen en verkoopeenheid opgeslagen | Geslaagd |
+| T22 | Prijsvalidatie | Prijs 0, te hoge prijs of lege eenheid naar de prijsroute sturen | Status 400 en bestaande prijs blijft gelijk | Ongeldige prijs en eenheid werden geweigerd | Geslaagd |
+| T23 | Prijs wijzigen en tonen | Prijs en eenheid van bestaand product wijzigen | Beheerpagina en publieke pagina tonen nieuwe europrijs per eenheid | Nieuwe prijs en eenheid werden opgeslagen en zichtbaar | Geslaagd |
+| T24 | Voorraadhistorie | `+1`, `-1` en exact instellen uitvoeren | Per echte verandering één regel met oud/nieuw en medewerker | De verwachte historieregels werden opgeslagen | Geslaagd |
+| T25 | Overige historie | Product toevoegen, prijs wijzigen en beschikbaarheid wisselen | De juiste soort en waarden worden opgeslagen | Alle drie wijzigingssoorten verschenen correct | Geslaagd |
+| T26 | Historie beveiligen | `GET /api/wijzigingen` zonder en met login uitvoeren | Zonder login 401; met login 200 en maximaal honderd regels | Beide statussen en inhoud klopten | Geslaagd |
+| T27 | Historie in beheerpagina | Product wijzigen en historie zonder paginaverversing bekijken | Nieuwe regel verschijnt direct met product, medewerker, waarden en tijdstip | De zichtbare historie werd direct bijgewerkt | Geslaagd |
 
-## Testresultaat
+## 4. Samenvatting
 
-**Aantal testgevallen:** 20  
-**Geslaagd:** 20  
-**Mislukt:** 0  
-**Eindconclusie:** Alle testgevallen zijn geslaagd. De applicatie voldoet aan de geteste eisen voor voorraadbeheer, authenticatie, foutafhandeling, mobiele bediening en weergave op het e-inkscherm.
+| Testgebied | Test-ID's | Resultaat |
+|---|---|---|
+| API en database | T01-T02 | 2/2 geslaagd |
+| Publieke pagina en e-ink | T03-T08 | 6/6 geslaagd |
+| Mobiel en authenticatie | T09-T13 | 5/5 geslaagd |
+| Voorraad en productbeheer | T14-T20 | 7/7 geslaagd |
+| Prijs en verkoopeenheid | T21-T23 | 3/3 geslaagd |
+| Wijzigingshistorie | T24-T27 | 4/4 geslaagd |
+
+**Aantal testgevallen:** 27
+
+**Geslaagd:** 27
+
+**Mislukt:** 0
+
+## 5. Eindconclusie
+
+De geteste applicatie voldoet aan de functionele eisen voor publieke weergave, beveiligd mobiel beheer, voorraad, prijs per verkoopeenheid, beschikbaarheid, wijzigingshistorie, permanente opslag en foutafhandeling.
+
+De gesimuleerde e-inktests zijn geslaagd. Omdat het echte 9-inchscherm nog niet is geleverd, blijft een aanvullende hardwaretest nodig voordat het systeem definitief op locatie kan worden geplaatst.

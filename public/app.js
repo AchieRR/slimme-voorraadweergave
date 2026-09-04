@@ -3,6 +3,13 @@ const productenContainer = document.querySelector("#producten");
 const verbindingsstatusElement =
     document.querySelector("#verbindingsstatus");
 
+function formatteerPrijs(prijsCent) {
+    return new Intl.NumberFormat("nl-NL", {
+        style: "currency",
+        currency: "EUR",
+    }).format(prijsCent / 100);
+}
+
 function maakProductElement(product) {
     const isUitverkocht = product.voorraad === 0;
 
@@ -35,7 +42,22 @@ function maakProductElement(product) {
         statusElement.textContent = "Beschikbaar";
     }
 
-    informatieElement.append(naamElement, statusElement);
+    const prijsElement = document.createElement("p");
+    prijsElement.classList.add("prijs");
+
+    if (product.prijs_cent > 0) {
+        prijsElement.textContent =
+            `${formatteerPrijs(product.prijs_cent)} per ${product.eenheid}`;
+    } else {
+        prijsElement.textContent =
+            "Prijs nog niet bekend";
+    }
+
+    informatieElement.append(
+        naamElement,
+        statusElement,
+        prijsElement
+    );
 
     const aantalElement = document.createElement("p");
     aantalElement.classList.add("aantal");
@@ -57,7 +79,7 @@ async function laadProducten() {
         const response = await fetch("/api/producten");
 
         if (!response.ok) {
-            throw new Error(`API-fout: ${response.status}`);
+            throw new Error(`API - fout: ${response.status} `);
         }
 
         const producten = await response.json();
@@ -126,4 +148,4 @@ async function laadProducten() {
 
 laadProducten();
 
-setInterval(laadProducten, 60_000);
+setInterval(laadProducten, 30_000);

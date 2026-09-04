@@ -15,11 +15,16 @@ fs.mkdirSync(dataMap, {
 
 const databasePad = path.join(dataMap, "voorraad.db");
 const database = new DatabaseSync(databasePad);
+database.exec("PRAGMA foreign_keys = ON;");
 
 database.exec(`
     CREATE TABLE IF NOT EXISTS producten (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         naam TEXT NOT NULL UNIQUE,
+        prijs_cent INTEGER NOT NULL DEFAULT 0
+            CHECK (prijs_cent BETWEEN 0 AND 1000000),
+        eenheid TEXT NOT NULL DEFAULT 'stuk'
+            CHECK (length(trim(eenheid)) BETWEEN 1 AND 30),
         voorraad INTEGER NOT NULL DEFAULT 0
             CHECK (voorraad >= 0),
         beschikbaar INTEGER NOT NULL DEFAULT 1
@@ -35,7 +40,61 @@ database.exec(`
         aangemaakt_op TEXT NOT NULL
             DEFAULT CURRENT_TIMESTAMP
     ) STRICT;
+
+    CREATE TABLE IF NOT EXISTS wijzigingen (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        product_id INTEGER NOT NULL,
+        medewerker_id INTEGER NOT NULL,
+
+        soort TEXT NOT NULL
+            CHECK (
+                soort IN (
+                    'product_toegevoegd',
+                    'voorraad',
+                    'prijs',
+                    'beschikbaarheid'
+                )
+            ),
+
+            oude_waarde TEXT,
+            nieuwe_waarde TEXT NOT NULL,
+
+            gewijzigd_op TEXT NOT NULL
+                DEFAULT CURRENT_TIMESTAMP,
+
+            FOREIGN KEY (product_id)
+                REFERENCES producten(id),
+
+            FOREIGN KEY (medewerker_id)
+                REFERENCES medewerkers(id)
+        ) STRICT;
 `);
+
+const productKolommen = database
+    .prepare("PRAGMA table_info(producten)")
+    .all();
+
+function heeftProductKolom(naam) {
+    return productKolommen.some(
+        (kolom) => kolom.name === naam
+    );
+}
+
+if (!heeftProductKolom("prijs_cent")) {
+    database.exec(`
+        ALTER TABLE producten
+        ADD COLUMN prijs_cent INTEGER NOT NULL DEFAULT 0
+            CHECK (prijs_cent BETWEEN 0 AND 1000000);
+    `);
+}
+
+if (!heeftProductKolom("eenheid")) {
+    database.exec(`
+        ALTER TABLE producten
+        ADD COLUMN eenheid TEXT NOT NULL DEFAULT 'stuk'
+            CHECK (length(trim(eenheid)) BETWEEN 1 AND 30);
+    `);
+}
 
 const resultaat = database
     .prepare("SELECT COUNT(*) AS aantal FROM producten")

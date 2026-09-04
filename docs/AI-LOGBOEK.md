@@ -2107,3 +2107,1015 @@ Het Word-document is structureel gecontroleerd op koppen, paginageometrie, tabel
 ### Eigen beslissing
 
 Ik presenteer onduidelijke interviewnotities niet als zekere requirements. Eerst laat ik de product owner vier korte punten bevestigen: de regel voor verbergen of status tonen, het soort prijs en de eenheid, het wijzigen van naam en prijs, en de noodzaak van wijzigingshistorie. De aanpassing van 60 naar 30 seconden kan wel alvast als bevestigd vervolgwerk worden gepland.
+
+---
+
+## Interactie 73 - Prijs, verkoopeenheid en wijzigingshistorie gekozen
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Nieuwe producteisen uitwerken voordat de implementatie begint
+
+### Volledige prompt van de student
+
+> Ik zou graag een prijs bij elk product willen hebben en ook een wijzigingshistorie. Ik denk dat de product owner bedoelde dat het per liter is voor verse melk en voor eieren per ei, of iets in die richting.
+
+### Antwoord en advies van AI
+
+Codex stelde voor om bij ieder product twee losse gegevens op te slaan: de productprijs in eurocenten en de verkoopeenheid waarop die prijs betrekking heeft. Voorbeelden zijn `EUR 1,80 per liter` voor verse melk en `EUR 0,35 per stuk` voor een ei. De voorraad blijft een geheel aantal verkoopeenheden. Geld wordt als eurocenten opgeslagen om afrondingsfouten met kommagetallen te voorkomen.
+
+Voor de wijzigingshistorie wordt voorgesteld om per productwijziging vast te leggen: het product, de medewerker, het soort wijziging, de oude waarde, de nieuwe waarde en het tijdstip. Hierdoor kan later worden gecontroleerd wie een voorraad-, prijs- of beschikbaarheidswijziging heeft uitgevoerd.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb deze uitbreiding ingepland vóór de definitieve oplevering. Eerst worden prijs en verkoopeenheid toegevoegd aan het datamodel. Daarna wordt de wijzigingshistorie gebouwd en zichtbaar gemaakt op de beheerpagina. De broncode typ ik zelf in kleine, controleerbare stappen.
+
+### Controle
+
+De huidige code en database zijn gecontroleerd. De tabel `producten` bevat nu alleen naam, voorraad en beschikbaarheid. De sessie bevat al het id en de gebruikersnaam van de ingelogde medewerker, waardoor de medewerker later aan een wijziging kan worden gekoppeld.
+
+### Eigen beslissing
+
+Ik kies voor een flexibele verkoopeenheid per product. Daardoor kan hetzelfde systeem prijzen tonen per liter, stuk, fles, pak of een andere passende eenheid. De wijzigingshistorie registreert alleen beheeracties aan producten en geen wachtwoorden of andere geheime gegevens.
+
+---
+
+## Interactie 74 - SQL-fout bij toevoegen van prijsvelden onderzocht
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Database startte niet na uitbreiding van de producttabel
+
+### Volledige prompt van de student
+
+> Na `npm run check` en `npm start` krijg ik `Error: near "voorraad": syntax error` vanuit `database.js`. De losse controleopdracht voor de nieuwe databasevelden geeft dezelfde fout.
+
+### Antwoord en advies van AI
+
+Codex legde uit dat `npm run check` alleen geldige JavaScript-syntax controleert. De SQL wordt pas door SQLite gelezen wanneer de server start. In de definitie van `eenheid` stond ten onrechte een komma vóór de bijbehorende `CHECK`-voorwaarde. Daardoor probeerde SQLite `CHECK` als een losse kolomdefinitie te lezen en ontstond de fout bij de volgende kolom `voorraad`.
+
+Daarnaast bleek het migratiegedeelte onvolledig: het controleerde op de kolom `eenheid`, maar voegde daarna `prijs_cent` toe. Er zijn twee aparte controles nodig, één voor `prijs_cent` en één voor `eenheid`.
+
+### Wat heb ik ermee gedaan?
+
+Ik vervang zelf de foutieve tabeldefinitie en de onvolledige migratie door de gecorrigeerde code uit de chat. Daarna voer ik dezelfde databasecontrole opnieuw uit.
+
+### Controle
+
+De fout is onafhankelijk gereproduceerd met `node --env-file=.env -e "require('./database')"`. De opdracht stopte consequent met exitcode 1 en dezelfde SQLite-melding `near "voorraad": syntax error`.
+
+### Eigen beslissing
+
+Ik verwijder de bestaande database niet. De migratie controleert eerst welke kolommen al bestaan, zodat bestaande product- en accountgegevens behouden blijven.
+
+---
+
+## Interactie 76 - Prijs en verkoopeenheid aan de producten-API toegevoegd
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20E2 controleren
+
+### Volledige prompt van de student
+
+> 20E2 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde of de publieke productenroute de nieuwe velden terugstuurt en of een nieuw product via de beveiligde route een prijs in centen en een verkoopeenheid kan ontvangen. Ook zijn de productantwoorden van de voorraad- en beschikbaarheidsroutes gelijkgetrokken.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb `server.js` uitgebreid zodat `prijs_cent` en `eenheid` worden gelezen, gevalideerd, opgeslagen en teruggegeven door de producten-API.
+
+### Controle
+
+`npm run check` slaagde. De draaiende route `GET /api/producten` gaf HTTP 200 en retourneerde alle zes bestaande producten met `prijs_cent: 0` en `eenheid: "stuk"`. De bestaande voorraadgegevens waren behouden.
+
+### Eigen beslissing
+
+Een nieuw product moet een prijs van minimaal één cent hebben. Bestaande producten houden tijdelijk prijs nul totdat ze via de volgende beheerfunctie een echte prijs krijgen.
+
+---
+
+## Interactie 77 - Beveiligde route voor prijswijzigingen toegevoegd
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20E3 controleren
+
+### Volledige prompt van de student
+
+> 20E3 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de nieuwe route `PUT /api/producten/:id/prijs`. De route valideert het productnummer, de prijs in centen en de verkoopeenheid. Na een geldige wijziging geeft de API het bijgewerkte product terug.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb een beveiligde API-route toegevoegd waarmee een ingelogde medewerker de prijs en verkoopeenheid van een bestaand product kan wijzigen.
+
+### Controle
+
+`npm run check` slaagde. Een rechtstreeks PUT-verzoek zonder ingelogde sessie gaf HTTP 401. Daarmee is gecontroleerd dat een gast de prijsroute niet kan gebruiken.
+
+### Eigen beslissing
+
+De route wijzigt prijs en verkoopeenheid samen. Zo kan geen onduidelijke combinatie ontstaan, zoals een nieuwe prijs die per ongeluk bij de oude eenheid blijft staan.
+
+---
+
+## Interactie 78 - Stap 20E4A gecontroleerd
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Prijsvelden in het formulier voor nieuwe producten
+
+### Volledige prompt van de student
+
+> 20E4A.
+
+### Antwoord en advies van AI
+
+Codex controleerde de nieuwe HTML-velden, JavaScript-koppeling, API-data en CSS-indeling. Het toevoegen van Eieren was gelukt met voorraad 12, prijs 35 cent en eenheid `stuk`. Er werden nog twee kleine invoerfouten gevonden: de minimumprijs stond op 10 cent in plaats van 1 cent en na het resetten werd `stuk` aan het prijsveld toegewezen in plaats van aan het eenheidsveld.
+
+### Wat heb ik ermee gedaan?
+
+Ik pas de twee betreffende regels zelf aan en test daarna of het formulier weer met prijs en eenheid klaarstaat voor een volgend product.
+
+### Controle
+
+`npm run check` slaagde. De database bevatte het nieuwe product Eieren met de juiste waarden. De CSS gebruikt twee kolommen, een volledige brede toevoegknop en schakelt op kleine schermen terug naar één kolom.
+
+### Eigen beslissing
+
+Ik rond een deelstap pas af nadat ook het opnieuw gebruiken van het formulier goed staat. Zo wordt niet alleen de eerste invoer, maar ook een volgende productinvoer correct verwerkt.
+
+---
+
+## Interactie 80 - Productprijzen op de beheerpagina getoond
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20E4B controleren
+
+### Volledige prompt van de student
+
+> 20E4B klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de prijsweergave in de beheerkaarten. Eurocenten worden met `Intl.NumberFormat` omgezet naar Nederlandse eurobedragen. Een bestaand product met prijs nul toont duidelijk dat de prijs nog niet is ingesteld.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb op iedere beheerkaart een prijsregel toegevoegd. Eieren wordt bijvoorbeeld weergegeven als EUR 0,35 per stuk.
+
+### Controle
+
+`npm run check` slaagde. De prijsregel wordt met `textContent` opgebouwd en staat direct na de voorraadregel in iedere productkaart. De bijbehorende CSS-regel is aanwezig.
+
+### Eigen beslissing
+
+Ik behandel prijs nul als tijdelijke migratiewaarde en niet als een gratis product. Daarom toont de beheerpagina bij nul `Prijs: nog niet ingesteld`.
+
+---
+
+## Interactie 79 - Stap 20E4A definitief afgerond
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Correcties aan het formulier opnieuw controleren
+
+### Volledige prompt van de student
+
+> 20E4A opnieuw klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde opnieuw de twee eerder gevonden regels. Het prijsveld accepteert nu bedragen vanaf één cent en na het toevoegen wordt het eenheidsveld correct teruggezet naar `stuk`.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de minimumwaarde van het prijsveld gecorrigeerd en de resetregel aan het juiste invoerveld gekoppeld.
+
+### Controle
+
+`npm run check` slaagde. De HTML bevat `min="0.01"`, de JavaScript-code gebruikt `producteenheidInvoer.value = "stuk"` en Eieren staat nog steeds in de database met voorraad 12, prijs 35 cent en eenheid `stuk`.
+
+### Eigen beslissing
+
+Ik ga nu eerst de prijs leesbaar op iedere beheerkaart tonen. Daarna voeg ik in een afzonderlijke deelstap het wijzigingsformulier toe, zodat ieder codeonderdeel klein en controleerbaar blijft.
+
+---
+
+## Interactie 75 - Stap 20E1 gecontroleerd en afgerond
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Productprijs en verkoopeenheid aan SQLite toevoegen
+
+### Volledige prompt van de student
+
+> 20E1 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de JavaScript-syntax, de nieuwe databasestructuur en de bestaande productgegevens. De kolommen `prijs_cent` en `eenheid` zijn correct aanwezig. De volgende stap is om deze gegevens via de producten-API te lezen en bij nieuwe producten op te slaan.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de tabel `producten` uitgebreid en een veilige migratie toegevoegd voor een database die al bestond. Bestaande producten kregen voorlopig de standaardwaarden 0 cent en `stuk`.
+
+### Controle
+
+`npm run check` slaagde. Een rechtstreekse databasequery gaf alle zes bestaande producten terug met hun bestaande voorraad, plus de nieuwe kolommen `prijs_cent` en `eenheid`. Er zijn geen producten of medewerkers verwijderd.
+
+### Eigen beslissing
+
+Ik bewaar geld als een geheel aantal eurocenten. Hierdoor is bijvoorbeeld EUR 1,80 gelijk aan `180` in de database en ontstaan geen afrondingsfouten met kommagetallen.
+
+---
+
+## Interactie 81 - Functie voor prijswijziging gecontroleerd
+
+**Datum:** 2 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20E4C1 afronden
+
+### Volledige prompt van de student
+
+> 20E4C1 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de functie die vanuit de beheerpagina een nieuwe prijs en verkoopeenheid naar de beveiligde API-route stuurt. Bij de eerste controle werden een afwijkende hoofdletter in de functienaam en ontbrekende spaties in de succesmelding gevonden. De student heeft deze gecorrigeerd.
+
+### Wat heb ik ermee gedaan?
+
+Ik gebruik nu consequent de functienaam `stelPrijsIn`. De succesmelding toont de productnaam, correct geformatteerde europrijs en verkoopeenheid met leesbare spaties.
+
+### Controle
+
+Na de correcties slaagde `npm run check`. De functie verstuurt `prijs_cent` en `eenheid` met een PUT-verzoek naar `/api/producten/:id/prijs` en gebruikt de bestaande veilige JSON-foutafhandeling.
+
+### Eigen beslissing
+
+Ik houd het versturen van de prijs en het maken van het formulier als twee kleine onderdelen. Daardoor kan ieder onderdeel afzonderlijk op fouten worden gecontroleerd.
+
+---
+
+## Interactie 82 - Prijsformulier voor bestaande producten onderzocht
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Controleren waarom bestaande producten geen prijs leken te kunnen krijgen
+
+### Volledige prompt van de student
+
+> Ik weet niet of het klaar is. Ik kan bestaande producten geen prijs geven of ik weet niet hoe dat moet. Kan jij het zelf controleren?
+
+### Antwoord en advies van AI
+
+Codex controleerde de JavaScript-syntax, de formulierfunctie, de aanroep vanuit iedere productkaart, de submit-handler, de CSS en het JavaScript-bestand dat door de draaiende server wordt geleverd. Alle benodigde koppelingen voor het aanpassen van een bestaande prijs waren aanwezig.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb nog geen broncode gewijzigd, omdat geen codefout is aangetoond. De student voert eerst een harde browserverversing uit en probeert het bestaande formulier met een concreet product.
+
+### Controle
+
+`npm run check` slaagde. Een reproduceerbare controle bevestigde dat `maakPrijsFormulier` bestaat, voor ieder product wordt aangeroepen en aan de productkaart wordt toegevoegd. De draaiende server leverde eveneens de actuele versie van `beheer.js` met deze code.
+
+### Eigen beslissing
+
+Ik verander geen werkende code op basis van alleen onzekerheid over het gebruik. Eerst wordt de zichtbare gebruikersstroom getest. Als die alsnog faalt, wordt de exacte melding of schermafbeelding gebruikt voor verdere diagnose.
+
+---
+
+## Interactie 83 - Ontbrekende inhoud van het prijsformulier gevonden
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Leeg prijsformulier op bestaande productkaarten
+
+### Volledige prompt van de student
+
+> De student stuurde een schermafbeelding waarop bij Verse melk wel `Prijs: nog niet ingesteld` stond, maar geen prijsvelden of knop zichtbaar waren.
+
+### Antwoord en advies van AI
+
+Codex vergeleek de schermafbeelding met de volledige functie `maakPrijsFormulier`. De functie maakte `prijsVeld`, `eenheidVeld` en `knop` wel aan, maar de regel die deze drie elementen aan `formulier` toevoegt ontbrak. Daardoor werd een leeg en dus onzichtbaar formulier aan iedere productkaart toegevoegd.
+
+### Wat heb ik ermee gedaan?
+
+Ik voeg zelf `formulier.append(prijsVeld, eenheidVeld, knop);` toe vóór de submit-handler. Daarna ververs ik de beheerpagina en test ik een bestaande productprijs.
+
+### Controle
+
+Een gerichte, reproduceerbare controle gaf `PRIJSVELDEN_TOEGEVOEGD=false` en exitcode 1. Daarmee is de exacte oorzaak aangetoond; de eerdere algemene controle keek alleen of het lege formulier aan de productkaart was gekoppeld.
+
+### Eigen beslissing
+
+Ik gebruik de schermafbeelding als aanvullend bewijs en maak de regressiecontrole specifieker. Een formulier telt pas als aanwezig wanneer ook de twee velden en de knop eraan zijn toegevoegd.
+
+---
+
+## Interactie 84 - Prijs wijzigen voor bestaande producten werkt
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20E4C2 definitief afronden
+
+### Volledige prompt van de student
+
+> Het werkt nu wel.
+
+### Antwoord en advies van AI
+
+Codex controleerde opnieuw de formulierinhoud, de JavaScript-syntax en de opgeslagen productprijs. Het prijsformulier is nu zichtbaar en kan de prijs en verkoopeenheid van een bestaand product wijzigen.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de ontbrekende formulieronderdelen gekoppeld en Verse melk via de beheerpagina ingesteld op EUR 1,80 per liter.
+
+### Controle
+
+`npm run check` slaagde. De specifieke regressiecontrole gaf `PRIJSVELDEN_TOEGEVOEGD=true`. Een rechtstreekse SQLite-query bevestigde voor Verse melk `prijs_cent = 180` en `eenheid = liter`.
+
+### Eigen beslissing
+
+Stap 20E4C2 is pas afgerond nadat niet alleen de zichtbare interface, maar ook de opgeslagen databasewaarde is gecontroleerd.
+
+---
+
+## Interactie 85 - Publieke prijsweergave op e-inkformaat gecontroleerd
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20E5 technisch en visueel controleren
+
+### Volledige prompt van de student
+
+> 20E5 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de prijsformatter, de publieke productopbouw, de CSS, de databasewaarden en een echte browserrender op 1024 bij 600 pixels. Alle zeven producten en hun prijsregels pasten zonder scrollen. In de render werd wel een lege zwarte verbindingsbalk ontdekt.
+
+### Wat heb ik ermee gedaan?
+
+Ik pas zelf de CSS-selector voor de verbindingsstatus aan van `.verbindingsstatus.empty` naar `.verbindingsstatus:empty`. Daardoor wordt de statusbalk verborgen wanneer hij geen tekst bevat en blijft hij zichtbaar bij een echte verbindingsfout.
+
+### Controle
+
+`npm run check` slaagde. De database bevatte de ingestelde prijzen voor Eieren, IJsjes, Verse melk en Verse yoghurt. Een headless Edge-render op 1024 bij 600 pixels toonde alle zeven productkaarten zonder scrollen, maar ook het onbedoelde lege zwarte vlak.
+
+### Eigen beslissing
+
+Ik rond 20E5 nog niet definitief af zolang de lege statusbalk schermruimte inneemt. De `:empty`-selector lost dit op zonder extra JavaScript en behoudt de foutmelding wanneer er wel tekst is.
+
+---
+
+## Interactie 86 - CSS-selector voor lege status opnieuw gecontroleerd
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20E5 opnieuw beoordelen
+
+### Volledige prompt van de student
+
+> 20E5 klaar.
+
+### Antwoord en advies van AI
+
+Codex voerde opnieuw de syntaxcontrole en een gerichte controle op de CSS-selector uit. De code bevatte `.verbindingsstatus::after` in plaats van `.verbindingsstatus:empty`. `::after` selecteert een pseudo-element na de status en verbergt de lege statusbalk daarom niet.
+
+### Wat heb ik ermee gedaan?
+
+Ik vervang zelf `::after` door `:empty` en laat de accolade en `display: none` ongewijzigd.
+
+### Controle
+
+`npm run check` slaagde, maar de specifieke controle gaf `JUISTE_EMPTY_SELECTOR=False` en exitcode 1. Daarom is 20E5 nog niet definitief afgerond.
+
+### Eigen beslissing
+
+Ik markeer een visuele correctie niet als gereed op basis van geldige JavaScript-syntax. De relevante CSS-selector moet eveneens aantoonbaar correct zijn en opnieuw in de browser worden gerenderd.
+
+---
+
+## Interactie 87 - Selector bevatte nog `after` in plaats van `empty`
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Tweede hercontrole van stap 20E5
+
+### Volledige prompt van de student
+
+> Klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde het opgeslagen CSS-bestand opnieuw. De selector was veranderd van `.verbindingsstatus::after` naar `.verbindingsstatus:after`, maar het woord `after` moest worden vervangen door `empty`.
+
+### Wat heb ik ermee gedaan?
+
+Ik vervang zelf de volledige selectorregel door `.verbindingsstatus:empty {` en laat de inhoud van de regel ongewijzigd.
+
+### Controle
+
+`npm run check` slaagde, maar de gerichte selectorcontrole gaf opnieuw `JUISTE_EMPTY_SELECTOR=False`. Regel 148 van `style.css` bevatte aantoonbaar `.verbindingsstatus:after {`.
+
+### Eigen beslissing
+
+Ik kopieer nu de volledige correcte regel in plaats van alleen het aantal dubbele punten te wijzigen. Daarmee voorkom ik dat het verkeerde pseudo-element `after` blijft staan.
+
+---
+
+## Interactie 88 - Stap 20E5 definitief afgerond
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Publieke prijsweergave en e-inkindeling definitief controleren
+
+### Volledige prompt van de student
+
+> Klaar.
+
+### Antwoord en advies van AI
+
+Codex voerde na de selectorcorrectie opnieuw de volledige syntaxcontrole en een verse browserrender op 1024 bij 600 pixels uit. De lege zwarte verbindingsbalk was verdwenen en de zeven productkaarten bleven volledig zichtbaar.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de lege verbindingsstatus met `.verbindingsstatus:empty` verborgen. De publieke pagina toont per product de Nederlandse europrijs en verkoopeenheid, of `Prijs nog niet bekend` wanneer nog geen prijs is ingesteld.
+
+### Controle
+
+`npm run check` slaagde, de gerichte controle gaf `JUISTE_EMPTY_SELECTOR=True` en de nieuwe Edge-render liet alle zeven producten zonder scrollen zien op 1024 bij 600 pixels. De tijdelijke browserprofielen in de projectmap zijn na controle verwijderd.
+
+### Eigen beslissing
+
+Stap 20E5 is definitief afgerond op basis van zowel technische als visuele controle. De volgende uitbreiding is de wijzigingshistorie.
+
+---
+
+## Interactie 89 - Databasetabel voor wijzigingshistorie afgerond
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F1 controleren
+
+### Volledige prompt van de student
+
+> 20F1 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de nieuwe tabel `wijzigingen`, de JavaScript-syntax en de foreign-keyinstelling van SQLite. De tabel kan productwijzigingen koppelen aan zowel een bestaand product als de ingelogde medewerker.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb foreign-keycontrole ingeschakeld en de tabel `wijzigingen` toegevoegd met product, medewerker, wijzigingssoort, oude waarde, nieuwe waarde en tijdstip.
+
+### Controle
+
+`npm run check` slaagde. `PRAGMA table_info(wijzigingen)` gaf alle zeven verwachte kolommen. `PRAGMA foreign_key_list(wijzigingen)` gaf koppelingen naar `producten` en `medewerkers`, en `PRAGMA foreign_keys` gaf waarde 1.
+
+### Eigen beslissing
+
+De geschiedenis bewaart alleen productbeheeracties. De toegestane soorten zijn product toevoegen, voorraad wijzigen, prijs wijzigen en beschikbaarheid wijzigen.
+
+---
+
+## Interactie 90 - Opslagfunctie voor historie gecontroleerd
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F2 controleren
+
+### Volledige prompt van de student
+
+> 20F2 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de voorbereide INSERT-query en de functie die één wijziging opslaat. De inhoud was correct, maar de functienaam stond als `registreerWijzigingen` in het meervoud. De geplande aanroepen gebruiken de enkelvoudige naam `registreerWijziging`.
+
+### Wat heb ik ermee gedaan?
+
+Ik verander zelf alleen de functienaam naar `registreerWijziging`. De SQL-query en parameters blijven hetzelfde.
+
+### Controle
+
+`npm run check` slaagde en de tabel bevatte nog nul regels, omdat de functie nog niet wordt aangeroepen. De broncontrole toonde de afwijkende functienaam op regel 58 van `server.js`.
+
+### Eigen beslissing
+
+Ik gebruik de enkelvoudige naam omdat iedere functieaanroep precies één geschiedenisregel vastlegt. Dit voorkomt een toekomstige `ReferenceError` en houdt de naam gelijk aan het domeinbegrip `Wijziging`.
+
+---
+
+## Interactie 91 - Centrale opslagfunctie voor historie afgerond
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F2 definitief controleren
+
+### Volledige prompt van de student
+
+> 20F2 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de gecorrigeerde functienaam, de voorbereide INSERT-query en de vijf parameters waarmee één geschiedenisregel wordt opgeslagen.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de centrale functie `registreerWijziging` klaarstaan. De functie zet oude en nieuwe waarden om naar tekst en bewaart een ontbrekende oude waarde als `NULL`.
+
+### Controle
+
+`npm run check` slaagde. De broncode bevatte de enkelvoudige functienaam en de tabel `wijzigingen` bevatte nog nul regels, zoals verwacht voordat een productroute de functie aanroept.
+
+### Eigen beslissing
+
+Alle productroutes gaan dezelfde centrale functie gebruiken. Daardoor blijft het formaat van geschiedenisregels consequent en staat de databasequery maar op één plaats.
+
+---
+
+## Interactie 92 - Product toevoegen wordt in historie geregistreerd
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F3A controleren
+
+### Volledige prompt van de student
+
+> De databasequery toont één geschiedenisregel voor product 9 en medewerker 1, met soort `product_toegevoegd`, oude waarde null en nieuwe waarde `Voorraad 10, 125 cent per fles`. Is dit goed? Ik denk van wel, dus 20F3A klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de geschiedenisregel onafhankelijk met een query die ook de productnaam en gebruikersnaam via joins ophaalt. Water was correct gekoppeld aan medewerker1 en de opgeslagen beginsituatie kwam overeen met het toegevoegde product.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb na het toevoegen van een product een aanroep naar `registreerWijziging` geplaatst. Daardoor ontstaat automatisch een geschiedenisregel met soort `product_toegevoegd`.
+
+### Controle
+
+`npm run check` slaagde. De onafhankelijke controle gaf `PRODUCT_TOEVOEGEN_HISTORIE=true`. De nieuwste regel bevatte Water, medewerker1, voorraad 10 en 125 cent per fles.
+
+### Eigen beslissing
+
+De beginsituatie wordt als één leesbare tekst opgeslagen. Daardoor kan later worden gezien met welke voorraad, prijs en verkoopeenheid het product is aangemaakt.
+
+---
+
+## Interactie 93 - PowerShell-controlecommando gecorrigeerd
+
+**Datum:** 3 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F3B controleren na een quotingfout
+
+### Volledige prompt van de student
+
+> Het Node-controlecommando voor de Water-historie geeft `SyntaxError: Invalid or unexpected token`. Er is ergens een fout.
+
+### Antwoord en advies van AI
+
+Codex stelde vast dat het eerder gegeven controlecommando niet correct was voor Windows PowerShell. Backslashes zoals `\"` ontsnappen daar de geneste dubbele quotes niet, waardoor Node onvolledige JavaScript-code ontving. Met PowerShell's stop-parsing-teken `--%` werd het commando letterlijk aan Node doorgegeven.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb geen projectcode gewijzigd. Ik gebruik voor dit soort Node-oneliners voortaan een PowerShell-geschikte opdracht met `--%`.
+
+### Controle
+
+Het gecorrigeerde commando eindigde met exitcode 0. De historie bevatte voor Water een voorraadwijziging door medewerker1 van oude waarde 10 naar nieuwe waarde 9, plus de eerdere regel voor het toevoegen van het product.
+
+### Eigen beslissing
+
+Stap 20F3B is afgerond. De fout zat in de testinstructie van AI en niet in de voorraad- of historiecode; dit wordt expliciet in het AI-logboek vermeld.
+
+---
+
+## Interactie 95 - Prijswijzigingen worden in historie geregistreerd
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F4A controleren
+
+### Volledige prompt van de student
+
+> 20F4A klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de prijsroute, de vergelijking van prijs en verkoopeenheid en de nieuwste geschiedenisregel voor Water. Alleen wanneer de prijs of eenheid werkelijk verandert, wordt een regel opgeslagen.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb vóór de prijsupdate de bestaande prijs en eenheid opgehaald. Na de update registreer ik de oude en nieuwe combinatie via `registreerWijziging` met soort `prijs`.
+
+### Controle
+
+`npm run check` slaagde. De databasecontrole gaf `PRIJS_HISTORIE=true` en toonde voor Water een wijziging door medewerker1 van `125 cent per fles` naar `150 cent per fles`.
+
+### Eigen beslissing
+
+Prijs en verkoopeenheid vormen samen één betekenisvolle productprijs. Daarom wordt ook een verandering van alleen de eenheid geregistreerd en worden beide waarden samen in de historie getoond.
+
+---
+
+## Interactie 96 - Beschikbaarheidshistorie gedeeltelijk gecontroleerd
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F4B controleren
+
+### Volledige prompt van de student
+
+> 20F4B klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de routecode, JavaScript-syntax en geschiedenisregels voor Water. De overgang van beschikbaar naar tijdelijk niet beschikbaar was correct opgeslagen, maar de terugkeer naar beschikbaar was nog niet uitgevoerd.
+
+### Wat heb ik ermee gedaan?
+
+Ik klik zelf nog één keer op `Weer beschikbaar maken`. Daardoor keert Water terug naar de oorspronkelijke status en ontstaat de tweede geschiedenisregel.
+
+### Controle
+
+`npm run check` slaagde. De code vergelijkt de oude en nieuwe status en registreert alleen een echte verandering. De database bevatte één juiste regel met oude waarde `beschikbaar` en nieuwe waarde `tijdelijk niet beschikbaar`; de tweerichtingstest gaf daarom nog `BESCHIKBAARHEID_HISTORIE=false`.
+
+### Eigen beslissing
+
+Ik rond deze test pas af nadat Water weer beschikbaar is en beide statusovergangen aantoonbaar in de historie staan.
+
+---
+
+## Interactie 97 - Beschikbaarheidshistorie definitief afgerond
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F4B opnieuw controleren
+
+### Volledige prompt van de student
+
+> 20F4B klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde opnieuw de productstatus en de twee nieuwste beschikbaarheidsregels. Water was teruggezet naar beschikbaar en beide statusovergangen waren opgeslagen.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb Water eerst tijdelijk niet beschikbaar gemaakt en daarna weer beschikbaar gemaakt. Beide beheeracties zijn automatisch geregistreerd.
+
+### Controle
+
+`npm run check` slaagde en de databasecontrole gaf `BESCHIKBAARHEID_HISTORIE=true`. De eerste overgang van beschikbaar naar tijdelijk niet beschikbaar was uitgevoerd door medewerker1; de terugkeer naar beschikbaar door medewerker2. De huidige productstatus was 1, dus beschikbaar.
+
+### Eigen beslissing
+
+De test toont niet alleen de statusgeschiedenis, maar ook dat verschillende medewerkers correct aan hun eigen acties worden gekoppeld.
+
+---
+
+## Interactie 98 - Beveiligde historie-API afgerond
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F5 controleren
+
+### Volledige prompt van de student
+
+> 20F5 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de API-route zonder sessie en met een echte medewerker1-sessie. De route geeft de nieuwste honderd wijzigingen terug met productnaam, medewerker, soort, oude waarde, nieuwe waarde en een ISO-tijdstip.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb `GET /api/wijzigingen` toegevoegd en beveiligd met `vereisLogin`. De query koppelt wijzigingen aan producten en medewerkers.
+
+### Controle
+
+`npm run check` slaagde. Zonder login gaf de route HTTP 401. Na inloggen als medewerker1 gaf de route HTTP 200, een JSON-array met zes wijzigingen en als nieuwste soort `beschikbaarheid`. Het wachtwoord werd rechtstreeks uit `.env` gebruikt en niet afgedrukt.
+
+### Eigen beslissing
+
+De API retourneert maximaal honderd nieuwste regels. Dit houdt het antwoord beheersbaar en is ruim voldoende voor dit schoolproject.
+
+---
+
+## Interactie 99 - Historiecontainer op beheerpagina gecontroleerd
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F6A controleren
+
+### Volledige prompt van de student
+
+> 20F6A klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde het inklapbare HTML-onderdeel, de unieke container-id en de JavaScript-selector. De HTML was functioneel, maar de variabelenaam stond als `wijzigingenContrainer` in plaats van `wijzigingenContainer`. Ook ontbrak de afsluitende puntkomma.
+
+### Wat heb ik ermee gedaan?
+
+Ik corrigeer zelf de variabelenaam en voeg de puntkomma toe. De positie boven het formulier voor een nieuw product blijft toegestaan, omdat het gesloten details-element daar weinig ruimte inneemt.
+
+### Controle
+
+`npm run check` slaagde en de HTML bevatte precies één element met `id="wijzigingen"`. De selector verwees naar de juiste id, maar de verkeerd gespelde variabelenaam zou bij gebruik in de volgende stap een `ReferenceError` veroorzaken.
+
+### Eigen beslissing
+
+Ik los de naamfout op voordat de laadfunctie wordt toegevoegd. Zo gebruikt de volgende stap meteen één consequente naam.
+
+---
+
+## Interactie 100 - Historiecontainer definitief afgerond
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F6A opnieuw controleren
+
+### Volledige prompt van de student
+
+> 20F6A klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde opnieuw de HTML-container en JavaScript-selector. De variabelenaam is nu correct gespeld en de oude foutieve naam is volledig verdwenen.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb `wijzigingenContrainer` gecorrigeerd naar `wijzigingenContainer` en de puntkomma toegevoegd.
+
+### Controle
+
+`npm run check` slaagde. De HTML bevatte precies één historiecontainer, `JUISTE_NAAM=True` en `FOUTE_NAAM_NOG_AANWEZIG=False`.
+
+### Eigen beslissing
+
+Stap 20F6A is afgerond. De geschiedenisinterface wordt verder opgebouwd met DOM-elementen en `textContent`, zodat databasewaarden nooit als onveilige HTML worden uitgevoerd.
+
+---
+
+## Interactie 94 - Exact ingestelde voorraad wordt geregistreerd
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F3C controleren
+
+### Volledige prompt van de student
+
+> 20F3C klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de route voor het exact instellen van de voorraad, de JavaScript-syntax en de nieuwste geschiedenisregel van Water. De route leest eerst de bestaande voorraad en registreert alleen een regel wanneer de nieuwe voorraad daarvan verschilt.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de exacte voorraadinstelling gekoppeld aan `registreerWijziging`. De oude en nieuwe voorraad worden als afzonderlijke waarden opgeslagen.
+
+### Controle
+
+`npm run check` slaagde. De databasecontrole gaf `EXACTE_VOORRAAD_HISTORIE=true` en toonde voor Water een wijziging door medewerker1 van 9 naar 12.
+
+### Eigen beslissing
+
+Het opnieuw instellen van hetzelfde getal wordt niet als wijziging opgeslagen. Zo blijft de historie beperkt tot echte veranderingen.
+
+---
+
+## Interactie 101 - DOM-element voor een geschiedenisregel afgerond
+
+**Datum:** 4 september 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Stap 20F6B1 controleren en corrigeren
+
+### Volledige prompt van de student
+
+> 20F6B1 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de functies die het soort wijziging leesbaar maken en van één geschiedenisregel een veilig DOM-element bouwen. Bij de eerste controles werden typefouten gevonden in de functienaam, `Date`, `toLocaleString` en `dateStyle`. Ook was een speciaal teken verkeerd opgeslagen.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de typefouten zelf gecorrigeerd en het verkeerd opgeslagen teken vervangen door een gewoon koppelteken. De waarden uit de API worden met `textContent` getoond.
+
+### Controle
+
+De functiedefinitie en functieaanroep gebruiken nu allebei exact `formatteerWijzigingssoort`. De datum wordt met `new Date(...).toLocaleString("nl-NL", ...)` verwerkt en `npm run check` slaagde zonder syntaxfouten.
+
+### Eigen beslissing
+
+Stap 20F6B1 is definitief afgerond. Ik ga hierna eerst de volledige lijst via `/api/wijzigingen` ophalen en weergeven voordat ik de vormgeving toevoeg.
+
+---
+
+## Interactie 102 - Laadfunctie voor wijzigingshistorie afgerond
+
+**Datum:** 4 september 2026  
+**AI-tool:** Codex  
+**Onderwerp:** Stap 20F6B2 controleren en corrigeren
+
+### Volledige prompt van de student
+
+> 20F6B2 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de nieuwe functie `laadWijzigingen`. Eerst stond de API-aanroep per ongeluk tussen vierkante haken. Daardoor was de code syntactisch geldig, maar zou `response` tijdens het uitvoeren geen geldig antwoord bevatten. Na de correctie gebruikt de functie `fetch("/api/wijzigingen")`.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de `fetch`-aanroep gecorrigeerd. De functie leegt de bestaande container, toont een melding wanneer er nog geen historie is en maakt voor iedere ontvangen wijziging een historie-element.
+
+### Controle
+
+De opgeslagen functie gebruikt het juiste API-adres, verwerkt het antwoord via `leesApiAntwoord`, vangt fouten af en `npm run check` slaagde zonder syntaxfouten.
+
+### Eigen beslissing
+
+Ik roep de laadfunctie pas in de volgende deelstap aan. Hierdoor blijven het bouwen van de functie en het koppelen aan het starten van de pagina afzonderlijk controleerbaar.
+
+---
+
+## Interactie 103 - Historie laden bij openen beheerpagina afgerond
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F6B3 controleren
+
+### Volledige prompt van de student
+
+> 20F6B3 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde dat `startBeheer()` na een geldige sessie zowel `laadProducten()` als `laadWijzigingen()` aanroept. De twee onafhankelijke aanvragen worden samen gestart met `Promise.all`.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de historie gekoppeld aan het openen van de beveiligde beheerpagina. Daardoor worden bestaande historische regels meteen na het inloggen opgehaald.
+
+### Controle
+
+`npm run check` slaagde zonder syntaxfouten. Een aanvraag naar `/api/wijzigingen` zonder login gaf statuscode 401, waardoor bevestigd is dat de historie niet openbaar toegankelijk is.
+
+### Eigen beslissing
+
+In de volgende deelstap vernieuw ik de historie ook na iedere geslaagde productwijziging. Zo hoeft de medewerker de hele pagina niet handmatig te herladen.
+
+---
+
+## Interactie 104 - Niet-werkende voorraadknoppen onderzocht
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Diagnose tijdens stap 20F6B4
+
+### Volledige prompt van de student
+
+> De -1 of +1 werkt niet denk ik, maar nu is 20F6B4 klaar.
+
+### Antwoord en advies van AI
+
+Codex telde de stap nog niet als afgerond, omdat de min- en plusknoppen onderdeel van de controle zijn. De screenshot toonde een correct API-adres, maar in het daadwerkelijk opgeslagen bestand stond nog steeds `` `/ api / producten / ${productId}/voorraad` `` met spaties.
+
+### Wat heb ik ermee gedaan?
+
+De vijf geslaagde productacties vernieuwen nu zowel de producten als de wijzigingshistorie. Het foutieve API-adres moet nog in het opgeslagen bestand worden gecorrigeerd en met `Ctrl+S` worden opgeslagen.
+
+### Controle
+
+Een geautomatiseerde test kon geldig inloggen en gaf statuscode 200 voor de login. Twee aanvragen naar precies het foutief opgeslagen adres gaven beide statuscode 404 in plaats van de verwachte 200. Daarmee is de fout reproduceerbaar en is het API-adres als oorzaak bevestigd.
+
+### Eigen beslissing
+
+Stap 20F6B4 blijft open totdat het adres zonder spaties is opgeslagen en een echte voorraadwijziging zowel de voorraad als de zichtbare historie direct bijwerkt.
+
+---
+
+## Interactie 105 - Direct vernieuwen van wijzigingshistorie afgerond
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F6B4 definitief controleren
+
+### Volledige prompt van de student
+
+> 20F6B4 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde opnieuw het opgeslagen API-adres en de vijf productacties. Het adres bevat nu geen foutieve spaties meer. Voorraad wijzigen, voorraad instellen, prijs wijzigen, beschikbaarheid wijzigen en product toevoegen laden na succes zowel de producten als de historie opnieuw.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de correctie opgeslagen, de beheerpagina hard vernieuwd en bevestigd dat de knoppen en de zichtbare historie-update werken.
+
+### Controle
+
+`npm run check` slaagde. Een herstelbare integratietest logde geldig in, verhoogde één voorraad met precies één, zag één nieuwe historieregel, verlaagde de voorraad daarna weer met één en bevestigde dat de oorspronkelijke voorraad was hersteld. Ook de herstelactie leverde één nieuwe historieregel op.
+
+### Eigen beslissing
+
+Stap 20F6B4 is afgerond. De twee testacties blijven als geldige en uitlegbare controles in de wijzigingshistorie staan.
+
+---
+
+## Interactie 106 - Wijzigingshistorie vormgegeven
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20F6C controleren
+
+### Volledige prompt van de student
+
+> 20F6C klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de nieuwe CSS voor het inklapbare historieonderdeel en de afzonderlijke wijzigingskaarten. De vormgeving sluit aan op de bestaande zwart-witte beheerinterface.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de historie voorzien van een duidelijke rand, klikbare samenvatting, losse kaarten, vetgedrukte oude en nieuwe waarden en kleinere informatie over medewerker en tijdstip.
+
+### Controle
+
+Alle CSS-selectors sluiten aan op bestaande HTML- en JavaScript-klassen. Het stylesheet bevat evenveel openende als sluitende accolades. Ik heb zichtbaar gecontroleerd dat iedere wijziging als afzonderlijk blok wordt getoond.
+
+### Eigen beslissing
+
+Het historieonderdeel mag intern scrollen omdat dit alleen op het mobiele beheerscherm staat. De eis dat niet gescrold kan worden geldt voor het afzonderlijke publieke e-inkscherm.
+
+---
+
+## Interactie 107 - Publiek scherm vernieuwt iedere 30 seconden
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20G1 controleren
+
+### Volledige prompt van de student
+
+> 20G1 klaar.
+
+### Antwoord en advies van AI
+
+Codex controleerde de interval waarmee het publieke scherm de producten opnieuw ophaalt. De eerdere zestig seconden zijn vervangen door de dertig seconden die tijdens het gesprek met de product owner zijn genoemd.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb `setInterval(laadProducten, 60_000)` gewijzigd naar `setInterval(laadProducten, 30_000)`.
+
+### Controle
+
+In `public/app.js` staat precies één interval van `30_000` milliseconden en de oude waarde `60_000` komt niet meer voor. `npm run check` slaagde zonder syntaxfouten.
+
+### Eigen beslissing
+
+Het publieke scherm haalt direct bij het openen producten op en herhaalt dit daarna iedere dertig seconden. Daardoor is een wijziging uiterlijk ongeveer dertig seconden later zichtbaar zonder dat een gast iets hoeft te bedienen.
+
+---
+
+## Interactie 108 - Automatisch vernieuwen binnen 30 seconden getest
+
+**Datum:** 4 september 2026
+**AI-tool:** Codex
+**Onderwerp:** Stap 20G2A controleren
+
+### Volledige prompt van de student
+
+> Yes brodoski, het werkt.
+
+### Antwoord en advies van AI
+
+De student heeft de publieke pagina en beheerpagina tegelijk geopend, een voorraad gewijzigd en bevestigd dat de publieke weergave zonder handmatig vernieuwen binnen dertig seconden werd bijgewerkt.
+
+### Wat heb ik ermee gedaan?
+
+Ik heb de automatische verversing praktisch getest en de tijdelijke voorraadwijziging daarna hersteld.
+
+### Controle
+
+De publieke pagina gebruikt `setInterval(laadProducten, 30_000)`. De zichtbare praktijktest bevestigde dat deze interval ook in de browser het verwachte resultaat geeft.
+
+### Eigen beslissing
+
+Stap 20G2A is geslaagd. Testgeval T07 in het testplan moet nu van zestig naar dertig seconden worden bijgewerkt, zodat documentatie en werkelijkheid overeenkomen.

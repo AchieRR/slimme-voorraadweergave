@@ -146,7 +146,7 @@ h1 {
 
 #nieuw-product-formulier {
     display: grid;
-    grid-template-columns: 2fr 1fr auto;
+    grid-template-columns: 1fr 1fr;
     gap: 12px;
     align-items: end;
 }
@@ -166,6 +166,12 @@ h1 {
     font-size: 18px;
 }
 
+.productprijs {
+    margin: 12px 0 18px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
 .toevoegknop {
     min-height: 52px;
     padding: 0 18px;
@@ -175,6 +181,7 @@ h1 {
     color: white;
     font-weight: bold;
     cursor: pointer;
+    grid-column: 1 / -1;
 }
 
 @media (max-width: 500px) {
@@ -239,4 +246,100 @@ h1 {
 .beschikbaarheidsknop:disabled {
     cursor: wait;
     opacity: 0.5;
+}
+
+.prijs-formulier {
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 10px;
+    align-items: end;
+    margin-bottom: 18px;
+}
+
+.prijs-formulier label {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-weight: bold;
+}
+
+.prijs-formulier input {
+    width: 100%;
+    min-height: 48px;
+    padding: 8px;
+    border: 3px solid black;
+    border-radius: 8px;
+    font-size: 18px;
+}
+
+.prijs-formulier button {
+    min-height: 48px;
+    padding: 0 14px;
+    border: 3px solid black;
+    border-radius: 8px;
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.prijs-formulier button:disabled {
+    cursor: wait;
+    opacity: 0.5;
+}
+
+@media (max-width: 600px) {
+    .prijs-formulier {
+        grid-template-columns: 1fr;
+    }
+}
+
+.historie {
+    margin-bottom: 24px;
+    background-color: white;
+    border: 3px solid black;
+    border-radius: 8px;
+}
+
+.historie summary {
+    padding: 16px;
+    font-size: 20px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.historie-uitleg {
+    margin: 0;
+    padding: 0 16px 16px;
+}
+
+.wijzigingen {
+    display: grid;
+    gap: 12px;
+    max-height: 480px;
+    padding: 0 16px 16px;
+    overflow-y: auto;
+}
+
+.wijziging {
+    padding: 14px;
+    border: 2px solid black;
+    border-radius: 6px;
+}
+
+.wijziging h3 {
+    margin: 0 0 8px;
+    font-size: 18px;
+}
+
+.wijziging p {
+    margin: 4px 0;
+}
+
+.wijziging-waarden {
+    font-weight: bold;
+}
+
+.wijziging-informatie {
+    font-size: 14px;
 }
