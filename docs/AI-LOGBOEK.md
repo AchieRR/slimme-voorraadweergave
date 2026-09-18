@@ -3119,3 +3119,4 @@ De publieke pagina gebruikt `setInterval(laadProducten, 30_000)`. De zichtbare p
 ### Eigen beslissing
 
 Stap 20G2A is geslaagd. Testgeval T07 in het testplan moet nu van zestig naar dertig seconden worden bijgewerkt, zodat documentatie en werkelijkheid overeenkomen.
+sufriedestraat 57 sneek, friesland, Nederland , Europa , Planeet aarde, melkweg, universum=
